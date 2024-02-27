@@ -120,7 +120,7 @@ fun DescriptionScreen(viewState: ViewState, recipeViewModel: RecipeViewModel) {
         val ingredients = viewState.meal?.let { getIngredientsString(it) }
         viewState.meal?.strInstructions?.let { it ->
             Text(
-                text = "\n$it \n $ingredients",
+                text = "\n Instructions:\n\n$it \n $ingredients",
                 Modifier
                     .weight(8f)
                     .verticalScroll(
