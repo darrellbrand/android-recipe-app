@@ -36,7 +36,9 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -68,7 +70,7 @@ fun MainScreen(name: String, modifier: Modifier = Modifier) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .background(color = Color.Gray)
+        //.background(color = Color.Gray)
     ) {
 
         when {
@@ -85,6 +87,7 @@ fun MainScreen(name: String, modifier: Modifier = Modifier) {
                     viewState = viewState, recipeViewModel = recipeViewModel
                 )
             }
+
             else -> {
                 DetailsScreen(recipeViewModel = recipeViewModel, viewState = viewState)
             }
@@ -116,29 +119,35 @@ fun DescriptionScreen(viewState: ViewState, recipeViewModel: RecipeViewModel) {
             placeholder = painterResource(id = R.drawable.excerpt_lazy_load),
         )
         Spacer(modifier = Modifier.height(20.dp))
-
-        OutlinedTextField(value = text, onValueChange = {
-            text = it
-        }, textStyle = androidx.compose.ui.text.TextStyle(fontSize = 30.sp),
-            keyboardOptions = KeyboardOptions.Default.copy(
-                imeAction = ImeAction.Done
-            ),
-            modifier = Modifier
-                .fillMaxWidth()
-                .onFocusChanged {
-                    if (it.isFocused && text == defaultText) {
-                        // Clear default text when the text field is focused
-                        text = ""
-                    } else if (!it.isFocused && text != defaultText) {
-                        text = ""
-                    }
-                })
+        Row() {
+            OutlinedTextField(value = text,
+                onValueChange = {
+                    text = it
+                },
+                textStyle = androidx.compose.ui.text.TextStyle(
+                    fontSize = 30.sp,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center
+                ),
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    imeAction = ImeAction.Done
+                ),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .onFocusChanged {
+                        if (it.isFocused && text == defaultText) {
+                            // Clear default text when the text field is focused
+                            text = ""
+                        } else if (!it.isFocused && text != defaultText) {
+                            text = ""
+                        }
+                    })
+        }
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceEvenly,
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Color.Gray)
                 .height(IntrinsicSize.Min)
         ) {
             Button(
@@ -149,7 +158,11 @@ fun DescriptionScreen(viewState: ViewState, recipeViewModel: RecipeViewModel) {
                     .weight(1f)
                     .fillMaxHeight()
             ) {
-                Text(text = "random recipe")
+                Text(
+                    text = "random recipe",
+                    textAlign = TextAlign.Center,
+                    fontWeight = FontWeight.Bold
+                )
             }
             Button(
                 onClick = {
@@ -162,20 +175,25 @@ fun DescriptionScreen(viewState: ViewState, recipeViewModel: RecipeViewModel) {
                     .weight(1f)
                     .fillMaxHeight()
             ) {
-                Text(text = "search recipe")
+                Text(
+                    text = "search recipe",
+                    textAlign = TextAlign.Center,
+                    fontWeight = FontWeight.Bold
+                )
             }
             Button(
                 onClick = {
-
-                    if (!text.isNullOrBlank()) {
-                        recipeViewModel.seeDetails()
-                    }
+                    recipeViewModel.seeDetails()
                 },
                 Modifier
                     .weight(1f)
                     .fillMaxHeight()
             ) {
-                Text(text = "see details")
+                Text(
+                    text = "see details",
+                    textAlign = TextAlign.Center,
+                    fontWeight = FontWeight.Bold
+                )
             }
 
         }
@@ -191,16 +209,16 @@ fun DetailsScreen(recipeViewModel: RecipeViewModel, viewState: ViewState) {
         verticalArrangement = Arrangement.SpaceEvenly
     ) {
 
-       val ingredients =  viewState.meal?.let { getIngredientsString(it) }
+        val ingredients = viewState.meal?.let { getIngredientsString(it) }
         viewState.meal?.strInstructions?.let { it ->
             Text(
-                text = "$it \n\n\n $ingredients",
+                text = "$it \n $ingredients",
                 Modifier
                     .weight(8f)
                     .verticalScroll(
                         rememberScrollState()
                     ),
-                fontSize = 25.sp, color = Color.Blue
+                fontSize = 25.sp
             )
         }
         Button(
@@ -212,7 +230,7 @@ fun DetailsScreen(recipeViewModel: RecipeViewModel, viewState: ViewState) {
                 .weight(.5f)
                 .fillMaxWidth()
         ) {
-            Text(text = "back")
+            Text(text = "back", textAlign = TextAlign.Center, fontWeight = FontWeight.Bold)
         }
     }
 }
