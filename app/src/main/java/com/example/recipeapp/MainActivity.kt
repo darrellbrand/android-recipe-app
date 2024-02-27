@@ -169,7 +169,8 @@ fun DescriptionScreen(viewState: ViewState, recipeViewModel: RecipeViewModel) {
                 Text(
                     text = "random recipe",
                     textAlign = TextAlign.Center,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 20.sp
                 )
             }
             Button(
@@ -186,7 +187,9 @@ fun DescriptionScreen(viewState: ViewState, recipeViewModel: RecipeViewModel) {
                 Text(
                     text = "search recipe",
                     textAlign = TextAlign.Center,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 20.sp
+                    
                 )
             }
           /*  Button(
