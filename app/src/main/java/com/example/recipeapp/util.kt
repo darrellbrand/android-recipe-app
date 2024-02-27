@@ -30,7 +30,7 @@ fun getIngredientsString(meal: Meal): String {
     val list = map.filterKeys { k -> k.isNotEmpty() }
     val builder = StringBuilder()
     list.forEach { (t, u) ->
-        builder.append(" $t : $u \n")
+        builder.append(" $t : $u \n\n")
     }
 
     return  "\n" + builder.toString()

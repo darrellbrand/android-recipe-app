@@ -56,7 +56,7 @@ class RecipeViewModel : ViewModel() {
 
         }
     }
-    fun seeDetails(){
+    /*fun seeDetails(){
         try {
             _viewState.value = _viewState.value.copy(
                 isDetails = true
@@ -68,8 +68,8 @@ class RecipeViewModel : ViewModel() {
             )
         }
 
-    }
-    fun seeDescription(){
+    }*/
+   /* fun seeDescription(){
         try {
             _viewState.value = _viewState.value.copy(
                 isDetails = false
@@ -81,7 +81,7 @@ class RecipeViewModel : ViewModel() {
             )
         }
     }
-
+*/
 
 
 }

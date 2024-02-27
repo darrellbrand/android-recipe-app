@@ -3,7 +3,6 @@ package com.example.recipeapp
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -33,7 +32,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -82,15 +80,15 @@ fun MainScreen(name: String, modifier: Modifier = Modifier) {
                 Text("ERROR OCCURRED")
             }
 
-            !viewState.isDetails -> {
+           else -> {
                 DescriptionScreen(
                     viewState = viewState, recipeViewModel = recipeViewModel
                 )
             }
 
-            else -> {
+        /*    else -> {
                 DetailsScreen(recipeViewModel = recipeViewModel, viewState = viewState)
-            }
+            }*/
 
         }
 
@@ -114,49 +112,59 @@ fun DescriptionScreen(viewState: ViewState, recipeViewModel: RecipeViewModel) {
             modifier = Modifier
                 .clip(RoundedCornerShape(30.dp))
                 .fillMaxWidth()
-                .weight(9f),
+                .weight(5f),
             contentScale = ContentScale.FillBounds,
             placeholder = painterResource(id = R.drawable.excerpt_lazy_load),
         )
-        Spacer(modifier = Modifier.height(20.dp))
-        Row() {
-            OutlinedTextField(value = text,
-                onValueChange = {
-                    text = it
-                },
-                textStyle = androidx.compose.ui.text.TextStyle(
-                    fontSize = 30.sp,
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Center
-                ),
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    imeAction = ImeAction.Done
-                ),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .onFocusChanged {
-                        if (it.isFocused && text == defaultText) {
-                            // Clear default text when the text field is focused
-                            text = ""
-                        } else if (!it.isFocused && text != defaultText) {
-                            text = ""
-                        }
-                    })
+       // Spacer(modifier = Modifier.height(20.dp))
+        val ingredients = viewState.meal?.let { getIngredientsString(it) }
+        viewState.meal?.strInstructions?.let { it ->
+            Text(
+                text = "$it \n $ingredients",
+                Modifier
+                    .weight(8f)
+                    .verticalScroll(
+                        rememberScrollState()
+                    ),
+                fontSize = 30.sp
+            )
         }
+        OutlinedTextField(value = text,
+            onValueChange = {
+                text = it
+            },
+            textStyle = androidx.compose.ui.text.TextStyle(
+                fontSize = 30.sp,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center
+            ),
+            keyboardOptions = KeyboardOptions.Default.copy(
+                imeAction = ImeAction.Done
+            ),
+            modifier = Modifier
+                .fillMaxWidth().weight(1.5f)
+                .onFocusChanged {
+                    if (it.isFocused && text == defaultText) {
+                        // Clear default text when the text field is focused
+                        text = ""
+                    }
+                  /*  } else if (!it.isFocused && text != defaultText) {
+                        text = ""
+                    }*/
+                })
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceEvenly,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(IntrinsicSize.Min)
+                .weight(1.5f)
         ) {
             Button(
                 onClick = {
                     recipeViewModel.fetchRandomMeal()
                 },
-                Modifier
-                    .weight(1f)
-                    .fillMaxHeight()
+                Modifier.fillMaxHeight()
             ) {
                 Text(
                     text = "random recipe",
@@ -172,7 +180,7 @@ fun DescriptionScreen(viewState: ViewState, recipeViewModel: RecipeViewModel) {
                     }
                 },
                 Modifier
-                    .weight(1f)
+                    //.weight(1f)
                     .fillMaxHeight()
             ) {
                 Text(
@@ -181,20 +189,18 @@ fun DescriptionScreen(viewState: ViewState, recipeViewModel: RecipeViewModel) {
                     fontWeight = FontWeight.Bold
                 )
             }
-            Button(
+          /*  Button(
                 onClick = {
                     recipeViewModel.seeDetails()
                 },
-                Modifier
-                    .weight(1f)
-                    .fillMaxHeight()
+                Modifier.fillMaxHeight()
             ) {
                 Text(
                     text = "see details",
                     textAlign = TextAlign.Center,
                     fontWeight = FontWeight.Bold
                 )
-            }
+            }*/
 
         }
 
@@ -202,6 +208,7 @@ fun DescriptionScreen(viewState: ViewState, recipeViewModel: RecipeViewModel) {
 
 }
 
+/*
 @Composable
 fun DetailsScreen(recipeViewModel: RecipeViewModel, viewState: ViewState) {
     Column(
@@ -234,3 +241,4 @@ fun DetailsScreen(recipeViewModel: RecipeViewModel, viewState: ViewState) {
         }
     }
 }
+*/
