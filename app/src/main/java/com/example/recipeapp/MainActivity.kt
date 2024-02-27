@@ -98,7 +98,7 @@ fun MainScreen(name: String, modifier: Modifier = Modifier) {
 
 @Composable
 fun DescriptionScreen(viewState: ViewState, recipeViewModel: RecipeViewModel) {
-    val defaultText = "Recipe search here"
+    val defaultText = "Search"
     var text by rememberSaveable { mutableStateOf(defaultText) }
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -120,7 +120,7 @@ fun DescriptionScreen(viewState: ViewState, recipeViewModel: RecipeViewModel) {
         val ingredients = viewState.meal?.let { getIngredientsString(it) }
         viewState.meal?.strInstructions?.let { it ->
             Text(
-                text = "$it \n $ingredients",
+                text = "\n$it \n $ingredients",
                 Modifier
                     .weight(8f)
                     .verticalScroll(
