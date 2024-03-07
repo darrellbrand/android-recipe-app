@@ -15,6 +15,7 @@ class RecipeViewModel : ViewModel() {
 
     init {
         fetchRandomMeal()
+        fetchCategories()
 
     }
 
@@ -37,7 +38,24 @@ class RecipeViewModel : ViewModel() {
 
         }
     }
+    fun fetchCategories() {
+        viewModelScope.launch {
+            try {
+                val response: CategoryResponse? = recipeService?.getCategories()
+                _viewState.value = _viewState.value.copy(
+                    loading = false,
+                    error = null,
+                    categories = response?.categories
+                )
+            } catch (e: Exception) {
+                _viewState.value = _viewState.value.copy(
+                    loading = true,
+                    error = e.toString()
+                )
+            }
 
+        }
+    }
     fun fetchSearchMeal(searchParam: String) {
         viewModelScope.launch {
             try {

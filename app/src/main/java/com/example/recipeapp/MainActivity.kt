@@ -43,6 +43,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
+import com.example.recipeapp.screens.CategoryScreen
+import com.example.recipeapp.screens.MainApp
+import com.example.recipeapp.screens.MainScreen
 import com.example.recipeapp.ui.theme.RecipeAppTheme
 
 class MainActivity : ComponentActivity() {
@@ -50,52 +53,13 @@ class MainActivity : ComponentActivity() {
 
         super.onCreate(savedInstanceState)
         setContent {
-            RecipeAppTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                ) {
-                    MainScreen("Android")
-                }
-            }
+          MainApp () {
+              CategoryScreen()
+          }
         }
     }
 }
 
-@Composable
-fun MainScreen(name: String, modifier: Modifier = Modifier) {
-    val recipeViewModel: RecipeViewModel = viewModel()
-    val viewState by recipeViewModel.viewState
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-        //.background(color = Color.Gray)
-    ) {
-
-        when {
-            viewState.loading -> {
-                CircularProgressIndicator()
-            }
-
-            viewState.error != null -> {
-                Text("ERROR OCCURRED")
-            }
-
-            !viewState.isDetails -> {
-                DescriptionScreen(
-                    viewState = viewState, recipeViewModel = recipeViewModel
-                )
-            }
-
-            else -> {
-                DetailsScreen(recipeViewModel = recipeViewModel, viewState = viewState)
-            }
-
-        }
-
-
-    }
-}
 
 @Composable
 fun DescriptionScreen(viewState: ViewState, recipeViewModel: RecipeViewModel) {

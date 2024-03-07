@@ -3,11 +3,23 @@ package com.example.recipeapp
 data class ViewState(
     val loading: Boolean = true,
     val meal: Meal? = null,
-    val isDetails : Boolean = false,
+    val isDetails: Boolean = false,
     val error: String? = null,
+    val categories: List<Category>? = null
 )
-data class MealResponse (
-    val meals : List<Meal>? = null
+
+data class MealResponse(
+    val meals: List<Meal>? = null
+)
+
+data class Category(
+    val idCategory: String?,
+    val strCategory: String?,
+    val strCategoryThumb: String?,
+    val strCategoryDescription: String?
+)
+data class CategoryResponse(
+    val categories: List<Category>
 )
 data class Meal(
     val meals: String,
