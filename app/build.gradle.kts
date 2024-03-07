@@ -50,6 +50,8 @@ android {
 }
 
 dependencies {
+
+  val nav_version = "2.7.7"
     val lifecycle_version = "2.7.0"
     implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycle_version")
     implementation ("com.squareup.retrofit2:retrofit:2.9.0")
@@ -70,5 +72,17 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
     implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
-    implementation("io.coil-kt:coil-compose:2.6.0")
+    implementation("io.coil-kt:coil-compose:2.6.0") // Kotlin
+    implementation("androidx.navigation:navigation-fragment-ktx:$nav_version")
+    implementation("androidx.navigation:navigation-ui-ktx:$nav_version")
+
+    // Feature module Support
+    implementation("androidx.navigation:navigation-dynamic-features-fragment:$nav_version")
+
+    // Testing Navigation
+    androidTestImplementation("androidx.navigation:navigation-testing:$nav_version")
+
+    // Jetpack Compose Integration
+    implementation("androidx.navigation:navigation-compose:$nav_version")
 }
+
