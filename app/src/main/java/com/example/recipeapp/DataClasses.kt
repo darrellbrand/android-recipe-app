@@ -5,7 +5,8 @@ data class ViewState(
     val meal: Meal? = null,
     val isDetails: Boolean = false,
     val error: String? = null,
-    val categories: List<Category>? = null
+    val categories: List<Category>? = null,
+    val meals: List<Meal>? = null
 )
 
 data class MealResponse(
@@ -13,20 +14,22 @@ data class MealResponse(
 )
 
 data class Category(
-    val idCategory: String?,
-    val strCategory: String?,
-    val strCategoryThumb: String?,
-    val strCategoryDescription: String?
+    val idCategory: String = "",
+    val strCategory: String ="",
+    val strCategoryThumb: String ="",
+    val strCategoryDescription: String =""
 )
+
 data class CategoryResponse(
     val categories: List<Category>
 )
+
 data class Meal(
-    val meals: String,
-    val idMeal: String,
-    val strMealThumb: String,
-    val strMeal: String,
-    val strInstructions: String,
+    val meals: String?,
+    val idMeal: String?,
+    val strMealThumb: String?,
+    val strMeal: String?,
+    val strInstructions: String?,
     val strIngredient1: String?,
     val strIngredient2: String?,
     val strIngredient3: String?,

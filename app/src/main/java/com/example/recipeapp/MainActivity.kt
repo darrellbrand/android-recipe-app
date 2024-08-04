@@ -45,8 +45,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.recipeapp.screens.CategoryScreen
 import com.example.recipeapp.screens.MainApp
-import com.example.recipeapp.screens.MainScreen
-import com.example.recipeapp.ui.theme.RecipeAppTheme
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,7 +53,9 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
           MainApp () {
-              CategoryScreen()
+              val recipeViewModel: RecipeViewModel = viewModel()
+              val viewState by recipeViewModel.viewState
+              CategoryScreen(viewState = viewState)
           }
         }
     }

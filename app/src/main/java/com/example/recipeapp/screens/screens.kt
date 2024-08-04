@@ -1,18 +1,19 @@
 package com.example.recipeapp.screens
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.Box
+
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CardElevation
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -21,40 +22,20 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.recipeapp.Category
-import com.example.recipeapp.CategoryResponse
-import com.example.recipeapp.DescriptionScreen
-import com.example.recipeapp.DetailsScreen
+import com.example.recipeapp.Meal
 import com.example.recipeapp.R
-import com.example.recipeapp.RecipeViewModel
 import com.example.recipeapp.ViewState
 import com.example.recipeapp.ui.theme.RecipeAppTheme
-
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-
-fun MainScreen() {
-    val recipeViewModel: RecipeViewModel = viewModel()
-    val viewState by recipeViewModel.viewState
-
-
-}
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -63,9 +44,13 @@ fun MainApp(content: @Composable () -> Unit) {
     RecipeAppTheme {
         Scaffold(topBar = {
             TopAppBar(
-                title = { Text(text = "Recipes") }, colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    titleContentColor = MaterialTheme.colorScheme.primary
+                title = { Text(text = "Recipe King",
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center,
+                    fontSize = 24.sp,
+                    color = MaterialTheme.colorScheme.primary,) }, colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer
+
                 )
             )
         }) {
@@ -78,40 +63,108 @@ fun MainApp(content: @Composable () -> Unit) {
     }
 }
 
-@Preview
-@Composable
-fun CategoryScreen() {
-    val recipeViewModel: RecipeViewModel = viewModel()
-    val viewState by recipeViewModel.viewState
-    val list: List<Category> = viewState.categories ?: listOf(Category(null, null, null, null))
-    Column() {
-        LazyVerticalGrid(columns = GridCells.Adaptive(minSize = 150.dp)) {
-            items(list) { category ->
-                CategoryItem(category = category)
-            }
 
+@Composable
+fun CategoryScreen(viewState: ViewState) {
+    val list = viewState.categories ?: listOf(Category())
+    LazyColumn(modifier = Modifier.fillMaxWidth()) {
+        items(list) { category ->
+            CategoryItem(category = category) {}
         }
     }
 
 }
 
 @Composable
-fun CategoryItem(category: Category) {
-    Column(
-        verticalArrangement = Arrangement.SpaceEvenly,
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.padding(10.dp)
+fun CategoryItem(category: Category, block: (String) -> Unit) {
+
+    Card(
+        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
+        modifier = Modifier
+            .padding(5.dp)
+            .clickable { block(category.idCategory) },
     ) {
-        Card (elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)){
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+
             AsyncImage(
                 category.strCategoryThumb,
                 contentDescription = "null",
                 contentScale = ContentScale.FillBounds,
                 placeholder = painterResource(id = R.drawable.excerpt_lazy_load),
+                modifier = Modifier
+                    .padding(
+                        5.dp
+                    )
+                    .weight(.5f)
             )
-            category.strCategory?.let { Text(text = it,modifier = Modifier.align(Alignment.CenterHorizontally), fontWeight = FontWeight.Bold) }
+
+            Text(
+                text = category.strCategory,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center,
+                fontSize = 24.sp,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.weight(1f)
+
+            )
+
+
+            // Spacer(modifier = Modifier.weight(1f))
+
         }
     }
-
-
 }
+
+@Composable
+fun RecipeList(viewState: ViewState) {
+    val list = viewState.meals ?: listOf(
+        Meal(
+            null, null, null, null,
+            null, null, null, null, null, null,
+            null, null, null, null, null, null,
+            null, null, null, null, null,
+            null, null, null, null, null,
+            null, null, null, null, null,
+            null, null, null, null, null,
+            null, null, null, null, null,
+            null, null, null, null
+        )
+    )
+    LazyColumn() {
+        items(list) { meal ->
+            MealItem(meal = meal)
+        }
+    }
+}
+
+@Composable
+fun MealItem(meal: Meal) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceEvenly,
+        modifier = Modifier.padding(10.dp)
+    ) {
+        Card(elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)) {
+            AsyncImage(
+                meal.strMealThumb,
+                contentDescription = "null",
+                contentScale = ContentScale.FillBounds,
+                placeholder = painterResource(id = R.drawable.excerpt_lazy_load),
+            )
+            meal.strMeal?.let {
+                Text(
+                    text = it,
+                    modifier = Modifier.align(Alignment.CenterHorizontally),
+                    fontWeight = FontWeight.Bold
+
+                )
+            }
+        }
+    }
+}
+
