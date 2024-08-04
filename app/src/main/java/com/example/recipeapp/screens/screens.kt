@@ -2,19 +2,21 @@ package com.example.recipeapp.screens
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -43,16 +45,42 @@ import com.example.recipeapp.ui.theme.RecipeAppTheme
 fun MainApp(content: @Composable () -> Unit) {
     RecipeAppTheme {
         Scaffold(topBar = {
+
             TopAppBar(
-                title = { Text(text = "Recipe King",
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Center,
-                    fontSize = 24.sp,
-                    color = MaterialTheme.colorScheme.primary,) }, colors = TopAppBarDefaults.topAppBarColors(
+                title = {
+                    Text(
+                        text = "Recipe King",
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Center,
+                        fontSize = 24.sp,
+                        color = MaterialTheme.colorScheme.primary,
+                    )
+                }, colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer
 
                 )
             )
+
+        }, bottomBar = {
+
+            BottomAppBar(
+                actions = {
+                    IconButton(onClick = { /* do something */ }, modifier = Modifier.weight(1f)) {
+                        Icon(Icons.Filled.Check, contentDescription = "Localized description")
+                    }
+                    IconButton(onClick = { /* do something */ }, modifier = Modifier.weight(1f)) {
+                        Icon(
+                            Icons.Filled.Edit,
+                            contentDescription = "Localized description",
+                        )
+                    }
+                    IconButton(onClick = { /* do something */ }, modifier = Modifier.weight(1f)) {
+                        Icon(
+                            Icons.Filled.Edit,
+                            contentDescription = "Localized description",
+                        )
+                    }
+                })
         }) {
             Surface(modifier = Modifier.padding(it)) {
                 content()
@@ -72,8 +100,8 @@ fun CategoryScreen(viewState: ViewState) {
             CategoryItem(category = category) {}
         }
     }
-
 }
+
 
 @Composable
 fun CategoryItem(category: Category, block: (String) -> Unit) {
