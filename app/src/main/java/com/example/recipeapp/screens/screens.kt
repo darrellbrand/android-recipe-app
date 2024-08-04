@@ -64,7 +64,7 @@ fun MainApp(content: @Composable () -> Unit) {
             TopAppBar(
                 title = {
                     Text(
-                        text = "Recipe King",
+                        text = "Categories",
                         fontWeight = FontWeight.Bold,
                         textAlign = TextAlign.Center,
                         fontSize = 24.sp,
