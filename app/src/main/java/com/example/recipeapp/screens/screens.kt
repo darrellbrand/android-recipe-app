@@ -101,8 +101,6 @@ fun MainApp(content: @Composable () -> Unit) {
         }) {
             Surface(modifier = Modifier.padding(it)) {
                 content()
-                var selectedItem by remember { mutableIntStateOf(0) }
-                val items = listOf("Songs", "Artists", "Playlists")
 
             }
 
