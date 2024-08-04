@@ -2,6 +2,9 @@ package com.example.recipeapp.screens
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+
+
+
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -9,8 +12,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AddCircle
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -47,6 +53,8 @@ fun MainApp(content: @Composable () -> Unit) {
         Scaffold(topBar = {
 
             TopAppBar(
+
+
                 title = {
                     Text(
                         text = "Recipe King",
@@ -58,29 +66,25 @@ fun MainApp(content: @Composable () -> Unit) {
                 }, colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer
 
-                )
-            )
-
-        }, bottomBar = {
-
-            BottomAppBar(
+                ),
+                navigationIcon =
+                {
+                    IconButton({}) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowBack,
+                            contentDescription = "radness"
+                        )
+                    }
+                },
                 actions = {
-                    IconButton(onClick = { /* do something */ }, modifier = Modifier.weight(1f)) {
-                        Icon(Icons.Filled.Check, contentDescription = "Localized description")
-                    }
-                    IconButton(onClick = { /* do something */ }, modifier = Modifier.weight(1f)) {
+                    IconButton(onClick = {  }, enabled = true) {
                         Icon(
-                            Icons.Filled.Edit,
-                            contentDescription = "Localized description",
+                            imageVector = Icons.Default.AddCircle,
+                            contentDescription = "rad"
                         )
                     }
-                    IconButton(onClick = { /* do something */ }, modifier = Modifier.weight(1f)) {
-                        Icon(
-                            Icons.Filled.Edit,
-                            contentDescription = "Localized description",
-                        )
-                    }
-                })
+                }
+            )
         }) {
             Surface(modifier = Modifier.padding(it)) {
                 content()
