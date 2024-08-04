@@ -6,19 +6,20 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.lang.Exception
 
 class RecipeViewModel : ViewModel() {
-    private val _viewState = mutableStateOf(ViewState())
-    val viewState: State<ViewState> = _viewState
+    private val _viewState = MutableStateFlow(ViewState())
+    val viewState: StateFlow<ViewState> = _viewState
 
     init {
         fetchRandomMeal()
         fetchCategories()
 
     }
-
     fun fetchRandomMeal() {
         viewModelScope.launch {
             try {

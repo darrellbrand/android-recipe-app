@@ -30,6 +30,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -59,10 +60,15 @@ class MainActivity : ComponentActivity() {
 
         super.onCreate(savedInstanceState)
         setContent {
-            MainApp() {
+            MainApp {
                 val recipeViewModel: RecipeViewModel = viewModel()
-                val viewState by recipeViewModel.viewState
+                val viewState by recipeViewModel.viewState.collectAsState()
+                // when viewstate here
+
+
+                // pass in state to screens
                 CategoryScreen(viewState = viewState)
+
             }
         }
     }
