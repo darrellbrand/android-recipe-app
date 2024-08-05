@@ -117,19 +117,14 @@ class RecipeViewModel : ViewModel() {
     fun searchScreen(){
 
     }
-
-    fun listScreen(){
-
-    }
     fun  categoryScreen(){
 
     }
-    enum class Screens { CATEGORY, SEARCH, DETAIL, LIST }
+    enum class Screens { CATEGORY, SEARCH, DETAIL }
     sealed class CurrentScreen(val title: String, val screens: Screens) {
         class Category : CurrentScreen(Screens.CATEGORY.name, Screens.CATEGORY)
-        class Search : CurrentScreen(Screens.SEARCH.name, Screens.CATEGORY)
-        class Detail : CurrentScreen(Screens.DETAIL.name, Screens.CATEGORY)
-        class List : CurrentScreen(Screens.LIST.name, Screens.CATEGORY)
+        class Search : CurrentScreen(Screens.SEARCH.name, Screens.SEARCH)
+        class Detail : CurrentScreen(Screens.DETAIL.name, Screens.DETAIL)
     }
 
 
