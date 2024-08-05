@@ -29,6 +29,7 @@ import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CardElevation
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -41,6 +42,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -139,7 +141,7 @@ fun CategoryItem(category: Category, block: (String) -> Unit) {
     Card(
         elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
         modifier = Modifier
-            .padding(8.dp)
+            .padding(5.dp)
             .clickable { block(category.idCategory) }
             .clip(RoundedCornerShape(15.dp)),
         colors = CardDefaults.cardColors(
@@ -321,34 +323,45 @@ fun DescriptionScreen(viewState: ViewState, recipeViewModel: RecipeViewModel) {
 }
 
 @Composable
-fun DetailsScreen(recipeViewModel: RecipeViewModel, viewState: ViewState) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.SpaceEvenly
-    ) {
+fun DetailsScreen(recipeViewModel: RecipeViewModel, viewState: State<ViewState>) {
+        val ingredients = viewState.value.meal?.let { getIngredientsString(it) }
+        Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.verticalScroll(
+            rememberScrollState())) {
 
-        val ingredients = viewState.meal?.let { getIngredientsString(it) }
-        viewState.meal?.strInstructions?.let { it ->
-            Text(
-                text = "$it \n $ingredients",
-                Modifier
-                    .weight(8f)
-                    .verticalScroll(
-                        rememberScrollState()
-                    ),
-                fontSize = 25.sp
-            )
-        }
-        Button(
-            onClick = {
+            Card( elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
+                modifier = Modifier
+                    .padding(15.dp).
+                    fillMaxWidth().align(Alignment.CenterHorizontally)) {
 
-                recipeViewModel.seeDescription()
-            },
-            Modifier
-                .weight(.5f)
-                .fillMaxWidth()
-        ) {
-            Text(text = "back", textAlign = TextAlign.Center, fontWeight = FontWeight.Bold)
+                Box (contentAlignment = Alignment.Center, modifier = Modifier.fillMaxWidth()){
+                    AsyncImage(
+                        viewState.value.meal?.strMealThumb,
+                        contentDescription = "null",
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(30.dp))
+                          .padding(5.dp),
+                        contentScale = ContentScale.FillBounds,
+                        placeholder = painterResource(id = R.drawable.excerpt_lazy_load),
+                    )
+                }
+
+            }
+            Card( elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
+                modifier = Modifier.padding(5.dp)) {
+                Text(
+                    text = "Instructions",
+                    style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Center
+                )
+                viewState.value.meal?.strInstructions?.let { it ->
+                    Text(
+                        text = "$it \n $ingredients",
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                }
+            }
         }
     }
-}
+
+
