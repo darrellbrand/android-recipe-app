@@ -21,6 +21,7 @@ class RecipeViewModel : ViewModel() {
         fetchCategories()
 
     }
+
     fun fetchRandomMeal() {
         viewModelScope.launch {
             try {
@@ -40,6 +41,7 @@ class RecipeViewModel : ViewModel() {
 
         }
     }
+
     fun fetchCategories() {
         viewModelScope.launch {
             try {
@@ -59,6 +61,7 @@ class RecipeViewModel : ViewModel() {
         }
 
     }
+
     fun fetchSearchMeal(searchParam: String) {
         viewModelScope.launch {
             try {
@@ -77,7 +80,8 @@ class RecipeViewModel : ViewModel() {
 
         }
     }
-    fun seeDetails(){
+
+    fun seeDetails() {
         try {
             _viewState.value = _viewState.value.copy(
                 isDetails = true
@@ -90,7 +94,8 @@ class RecipeViewModel : ViewModel() {
         }
 
     }
-    fun seeDescription(){
+
+    fun seeDescription() {
         try {
             _viewState.value = _viewState.value.copy(
                 isDetails = false
@@ -103,6 +108,29 @@ class RecipeViewModel : ViewModel() {
         }
     }
 
+    /**
+     * callbacks for ui
+     */
+    fun randomScreen(){
+
+    }
+    fun searchScreen(){
+
+    }
+
+    fun listScreen(){
+
+    }
+    fun  categoryScreen(){
+
+    }
+    enum class Screens { CATEGORY, SEARCH, DETAIL, LIST }
+    sealed class CurrentScreen(val title: String, val screens: Screens) {
+        class Category : CurrentScreen(Screens.CATEGORY.name, Screens.CATEGORY)
+        class Search : CurrentScreen(Screens.SEARCH.name, Screens.CATEGORY)
+        class Detail : CurrentScreen(Screens.DETAIL.name, Screens.CATEGORY)
+        class List : CurrentScreen(Screens.LIST.name, Screens.CATEGORY)
+    }
 
 
 }

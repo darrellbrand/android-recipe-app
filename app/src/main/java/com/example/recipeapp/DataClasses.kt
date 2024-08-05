@@ -6,7 +6,8 @@ data class ViewState(
     val isDetails: Boolean = false,
     val error: String? = null,
     val categories: List<Category>? = null,
-    val meals: List<Meal>? = null
+    val meals: List<Meal>? = null,
+    val currentScreen: RecipeViewModel.CurrentScreen? = null,
 )
 
 data class MealResponse(

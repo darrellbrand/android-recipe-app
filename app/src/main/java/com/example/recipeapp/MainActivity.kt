@@ -47,6 +47,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -62,152 +63,19 @@ class MainActivity : ComponentActivity() {
         setContent {
             val recipeViewModel: RecipeViewModel = viewModel()
             val viewState by recipeViewModel.viewState
-            MainApp {
-                // when viewstate here
-
-
-                // pass in state to screens
-                CategoryScreen(viewState = viewState)
-
-            }
-        }
-    }
-}
-
-
-@Composable
-fun DescriptionScreen(viewState: ViewState, recipeViewModel: RecipeViewModel) {
-    val defaultText = "Recipe search here"
-    var text by rememberSaveable { mutableStateOf(defaultText) }
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.SpaceEvenly
-    ) {
-
-
-        AsyncImage(
-            viewState.meal?.strMealThumb,
-            contentDescription = "null",
-            modifier = Modifier
-                .clip(RoundedCornerShape(30.dp))
-                .fillMaxWidth()
-                .weight(9f),
-            contentScale = ContentScale.FillBounds,
-            placeholder = painterResource(id = R.drawable.excerpt_lazy_load),
-        )
-        Spacer(modifier = Modifier.height(20.dp))
-        Row() {
-            OutlinedTextField(value = text,
-                onValueChange = {
-                    text = it
-                },
-                textStyle = androidx.compose.ui.text.TextStyle(
-                    fontSize = 30.sp,
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Center
-                ),
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    imeAction = ImeAction.Done
-                ),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .onFocusChanged {
-                        if (it.isFocused && text == defaultText) {
-                            // Clear default text when the text field is focused
-                            text = ""
-                        } else if (!it.isFocused && text != defaultText) {
-                            text = ""
-                        }
-                    })
-        }
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceEvenly,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(IntrinsicSize.Min)
-        ) {
-            Button(
-                onClick = {
-                    recipeViewModel.fetchRandomMeal()
-                },
-                Modifier
-                    .weight(1f)
-                    .fillMaxHeight()
-            ) {
-                Text(
-                    text = "random recipe",
-                    textAlign = TextAlign.Center,
-                    fontWeight = FontWeight.Bold
-                )
-            }
-            Button(
-                onClick = {
-
-                    if (!text.isNullOrBlank() && text != defaultText) {
-                        recipeViewModel.fetchSearchMeal(text)
+            MainApp (searchScreen = recipeViewModel::searchScreen,
+                randomScreen = recipeViewModel::randomScreen,
+                content =
+                {
+                    when (viewState.currentScreen) {
+                        // pass in state to screens
+                        is RecipeViewModel.CurrentScreen.Category -> CategoryScreen(viewState = viewState)
+                        is RecipeViewModel.CurrentScreen.Detail ->  {}
+                        is RecipeViewModel.CurrentScreen.List -> {}
+                        is RecipeViewModel.CurrentScreen.Search -> {}
+                        null -> CategoryScreen(viewState = viewState)
                     }
-                },
-                Modifier
-                    .weight(1f)
-                    .fillMaxHeight()
-            ) {
-                Text(
-                    text = "search recipe",
-                    textAlign = TextAlign.Center,
-                    fontWeight = FontWeight.Bold
-                )
-            }
-            Button(
-                onClick = {
-                    recipeViewModel.seeDetails()
-                },
-                Modifier
-                    .weight(1f)
-                    .fillMaxHeight()
-            ) {
-                Text(
-                    text = "see details",
-                    textAlign = TextAlign.Center,
-                    fontWeight = FontWeight.Bold
-                )
-            }
-
-        }
-
-    }
-
-}
-
-@Composable
-fun DetailsScreen(recipeViewModel: RecipeViewModel, viewState: ViewState) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.SpaceEvenly
-    ) {
-
-        val ingredients = viewState.meal?.let { getIngredientsString(it) }
-        viewState.meal?.strInstructions?.let { it ->
-            Text(
-                text = "$it \n $ingredients",
-                Modifier
-                    .weight(8f)
-                    .verticalScroll(
-                        rememberScrollState()
-                    ),
-                fontSize = 25.sp
-            )
-        }
-        Button(
-            onClick = {
-
-                recipeViewModel.seeDescription()
-            },
-            Modifier
-                .weight(.5f)
-                .fillMaxWidth()
-        ) {
-            Text(text = "back", textAlign = TextAlign.Center, fontWeight = FontWeight.Bold)
+                })
         }
     }
 }
