@@ -1,46 +1,43 @@
 package com.example.recipeapp.screens
 
+
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 
 
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.ExitToApp
-import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.NavigationBarItemColors
-import androidx.compose.material3.NavigationRailItemColors
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -65,10 +62,7 @@ fun MainApp(content: @Composable () -> Unit) {
                 title = {
                     Text(
                         text = "Categories",
-                        fontWeight = FontWeight.Bold,
                         textAlign = TextAlign.Center,
-                        fontSize = 24.sp,
-                        color = MaterialTheme.colorScheme.primary,
                     )
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -113,7 +107,7 @@ fun MainApp(content: @Composable () -> Unit) {
 @Composable
 fun CategoryScreen(viewState: ViewState) {
     val list = viewState.categories ?: listOf(Category())
-    LazyColumn(modifier = Modifier.fillMaxWidth()) {
+    LazyVerticalGrid(GridCells.Adaptive(150.dp)) {
         items(list) { category ->
             CategoryItem(category = category) {}
         }
@@ -127,14 +121,16 @@ fun CategoryItem(category: Category, block: (String) -> Unit) {
     Card(
         elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
         modifier = Modifier
-            .padding(5.dp)
-            .clickable { block(category.idCategory) },
+            .padding(3.dp)
+            .clickable { block(category.idCategory) }
+            .clip(RoundedCornerShape(15.dp))
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight(),
-            verticalAlignment = Alignment.CenterVertically
+
+
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier.padding(5.dp)
         ) {
 
             AsyncImage(
@@ -143,43 +139,26 @@ fun CategoryItem(category: Category, block: (String) -> Unit) {
                 contentScale = ContentScale.FillBounds,
                 placeholder = painterResource(id = R.drawable.excerpt_lazy_load),
                 modifier = Modifier
-                    .padding(
-                        5.dp
-                    )
-                    .weight(.5f)
+                    .padding(5.dp)
+                    .clip(RoundedCornerShape(15.dp))
             )
-
             Text(
                 text = category.strCategory,
-                fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
-                fontSize = 24.sp,
-                color = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.weight(1f)
-
+                style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier.fillMaxWidth()
             )
-
-
-            // Spacer(modifier = Modifier.weight(1f))
-
         }
     }
+
 }
+
+
 
 @Composable
 fun RecipeList(viewState: ViewState) {
     val list = viewState.meals ?: listOf(
-        Meal(
-            null, null, null, null,
-            null, null, null, null, null, null,
-            null, null, null, null, null, null,
-            null, null, null, null, null,
-            null, null, null, null, null,
-            null, null, null, null, null,
-            null, null, null, null, null,
-            null, null, null, null, null,
-            null, null, null, null
-        )
+        Meal()
     )
     LazyColumn() {
         items(list) { meal ->

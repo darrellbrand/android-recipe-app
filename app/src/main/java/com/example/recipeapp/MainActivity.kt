@@ -60,9 +60,9 @@ class MainActivity : ComponentActivity() {
 
         super.onCreate(savedInstanceState)
         setContent {
+            val recipeViewModel: RecipeViewModel = viewModel()
+            val viewState by recipeViewModel.viewState
             MainApp {
-                val recipeViewModel: RecipeViewModel = viewModel()
-                val viewState by recipeViewModel.viewState.collectAsState()
                 // when viewstate here
 
 
