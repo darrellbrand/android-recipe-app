@@ -144,11 +144,6 @@ fun CategoryItem(category: Category, block: (String) -> Unit) {
             .padding(5.dp)
             .clickable { block(category.idCategory) }
             .clip(RoundedCornerShape(15.dp)),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface,
-            contentColor = MaterialTheme.colorScheme.contentColorFor(MaterialTheme.colorScheme.surface)
-        )
-
     ) {
 
 
@@ -327,19 +322,18 @@ fun DetailsScreen(recipeViewModel: RecipeViewModel, viewState: State<ViewState>)
         val ingredients = viewState.value.meal?.let { getIngredientsString(it) }
         Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.verticalScroll(
             rememberScrollState())) {
-
             Card( elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
                 modifier = Modifier
-                    .padding(15.dp).
-                    fillMaxWidth().align(Alignment.CenterHorizontally)) {
+                    .padding(15.dp)
+                    .fillMaxWidth()
+                    .align(Alignment.CenterHorizontally)) {
 
-                Box (contentAlignment = Alignment.Center, modifier = Modifier.fillMaxWidth()){
+                Box (contentAlignment = Alignment.Center, modifier = Modifier.fillMaxWidth().padding(15.dp)){
                     AsyncImage(
                         viewState.value.meal?.strMealThumb,
                         contentDescription = "null",
                         modifier = Modifier
-                            .clip(RoundedCornerShape(30.dp))
-                          .padding(5.dp),
+                            .clip(RoundedCornerShape(15.dp)),
                         contentScale = ContentScale.FillBounds,
                         placeholder = painterResource(id = R.drawable.excerpt_lazy_load),
                     )
@@ -347,11 +341,11 @@ fun DetailsScreen(recipeViewModel: RecipeViewModel, viewState: State<ViewState>)
 
             }
             Card( elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
-                modifier = Modifier.padding(5.dp)) {
+                modifier = Modifier.padding(15.dp)) {
                 Text(
                     text = "Instructions",
                     style = MaterialTheme.typography.titleLarge,
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().padding(5.dp),
                     textAlign = TextAlign.Center
                 )
                 viewState.value.meal?.strInstructions?.let { it ->
