@@ -1,24 +1,42 @@
 package com.example.recipeapp
 
-import android.app.Application
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.AndroidViewModel
+import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
-import java.lang.Exception
 
 class RecipeViewModel : ViewModel() {
-    private val _viewState = mutableStateOf(ViewState())
-    val viewState: State<ViewState> = _viewState
+    private val _viewState = MutableStateFlow(ViewState())
+    val viewState = _viewState.asStateFlow()
+    // fun getValue() = viewState
+
+    private val _searchString = MutableStateFlow(String())
+    val searchString = _searchString.asStateFlow()
+
+    private val _categories = MutableStateFlow(listOf(Category()))
+    val categories = _categories.asStateFlow()
+
+
+    private val _meals = MutableStateFlow(listOf(Meal()))
+    val meals = _meals.asStateFlow().combine(_searchString) { meals: List<Meal>, s: String ->
+        if (s.isBlank()) {
+            meals
+        } else {
+            meals.filter { it.strMeal?.contains(s) == true }
+        }
+    }
+
+    private val _meal = MutableStateFlow(Meal())
+    val meal = _meal.asStateFlow()
+
 
     init {
         fetchRandomMeal()
         fetchCategories()
+        fetchSearchMeals()
 
     }
 
@@ -28,13 +46,11 @@ class RecipeViewModel : ViewModel() {
                 val response: MealResponse? = recipeService?.getRandomMeal()
                 val meal: Meal? = response?.meals?.firstOrNull()
                 _viewState.value = _viewState.value.copy(
-                    loading = false,
-                    error = null,
-                    meal = response?.meals?.firstOrNull()
+                    error = "",
                 )
+                _meal.value = meal ?: Meal()
             } catch (e: Exception) {
                 _viewState.value = _viewState.value.copy(
-                    loading = true,
                     error = e.toString()
                 )
             }
@@ -47,13 +63,13 @@ class RecipeViewModel : ViewModel() {
             try {
                 val response: CategoryResponse? = recipeService?.getCategories()
                 _viewState.value = _viewState.value.copy(
-                    loading = false,
-                    error = null,
-                    categories = response?.categories
+                    error = "",
                 )
+                response?.let { _categories.value = it.categories }
+
+
             } catch (e: Exception) {
                 _viewState.value = _viewState.value.copy(
-                    loading = true,
                     error = e.toString()
                 )
             }
@@ -62,64 +78,42 @@ class RecipeViewModel : ViewModel() {
 
     }
 
-    fun fetchSearchMeal(searchParam: String) {
+    fun fetchSearchMeals() {
         viewModelScope.launch {
             try {
-                val response: MealResponse? = recipeService?.getSearchMeal(searchParam)
+                val response: MealResponse? = recipeService?.getSearchMeals(searchString.value)
                 _viewState.value = _viewState.value.copy(
-                    loading = false,
-                    error = null,
-                    meal = response?.meals?.firstOrNull()
+                    error = "",
                 )
+                response?.let { _meals.value = it.meals ?: listOf(Meal()) }
             } catch (e: Exception) {
                 _viewState.value = _viewState.value.copy(
-                    loading = true,
                     error = e.toString()
                 )
             }
 
-        }
-    }
-
-    fun seeDetails() {
-        try {
-            _viewState.value = _viewState.value.copy(
-                isDetails = true
-            )
-        } catch (e: Exception) {
-            _viewState.value = _viewState.value.copy(
-                loading = true,
-                error = e.toString()
-            )
-        }
-
-    }
-
-    fun seeDescription() {
-        try {
-            _viewState.value = _viewState.value.copy(
-                isDetails = false
-            )
-        } catch (e: Exception) {
-            _viewState.value = _viewState.value.copy(
-                loading = true,
-                error = e.toString()
-            )
         }
     }
 
     /**
      * callbacks for ui
      */
-    fun randomScreen(){
+    fun randomScreen() {
 
     }
-    fun searchScreen(){
+
+    fun searchScreen() {
 
     }
-    fun  categoryScreen(){
 
+    fun displayCategory() {
+        //implement the request to network
+        _viewState.value.currentScreen = CurrentScreen.Search()
     }
+    fun onValueChanged(search : String){
+        _searchString.value = search
+    }
+
     enum class Screens { CATEGORY, SEARCH, DETAIL }
     sealed class CurrentScreen(val title: String, val screens: Screens) {
         class Category : CurrentScreen(Screens.CATEGORY.name, Screens.CATEGORY)

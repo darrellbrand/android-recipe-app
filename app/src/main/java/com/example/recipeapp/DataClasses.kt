@@ -1,13 +1,9 @@
 package com.example.recipeapp
 
 data class ViewState(
-    val loading: Boolean = true,
-    val meal: Meal? = null,
-    val isDetails: Boolean = false,
-    val error: String? = null,
-    val categories: List<Category>? = null,
-    val meals: List<Meal>? = null,
-    val currentScreen: RecipeViewModel.CurrentScreen? = null,
+    val meal: Meal = Meal(),
+    val error: String = "",
+    var currentScreen: RecipeViewModel.CurrentScreen = RecipeViewModel.CurrentScreen.Search(),
 )
 
 data class MealResponse(
