@@ -1,6 +1,6 @@
 package com.example.recipeapp
 
-import androidx.compose.runtime.collectAsState
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -8,10 +8,11 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
+
 class RecipeViewModel : ViewModel() {
+
     private val _viewState = MutableStateFlow(ViewState())
     val viewState = _viewState.asStateFlow()
-    // fun getValue() = viewState
 
     private val _searchString = MutableStateFlow(String())
     val searchString = _searchString.asStateFlow()
@@ -25,7 +26,7 @@ class RecipeViewModel : ViewModel() {
         if (s.isBlank()) {
             meals
         } else {
-            meals.filter { it.strMeal?.contains(s) == true }
+            meals.filter { it.strMeal?.contains(s, ignoreCase = true) == true }
         }
     }
 
@@ -34,14 +35,12 @@ class RecipeViewModel : ViewModel() {
 
 
     init {
-        fetchRandomMeal()
         fetchCategories()
-        fetchSearchMeals()
-
     }
 
     fun fetchRandomMeal() {
         viewModelScope.launch {
+            Log.i("RVM", "fetchRandomMeal")
             try {
                 val response: MealResponse? = recipeService?.getRandomMeal()
                 val meal: Meal? = response?.meals?.firstOrNull()
@@ -60,6 +59,7 @@ class RecipeViewModel : ViewModel() {
 
     fun fetchCategories() {
         viewModelScope.launch {
+            Log.i("RVM", "fetchCategory")
             try {
                 val response: CategoryResponse? = recipeService?.getCategories()
                 _viewState.value = _viewState.value.copy(
@@ -80,6 +80,7 @@ class RecipeViewModel : ViewModel() {
 
     fun fetchSearchMeals() {
         viewModelScope.launch {
+            Log.i("RVM", "fetchSearchMeals")
             try {
                 val response: MealResponse? = recipeService?.getSearchMeals(searchString.value)
                 _viewState.value = _viewState.value.copy(
@@ -95,24 +96,82 @@ class RecipeViewModel : ViewModel() {
         }
     }
 
+    fun updateCurrentScreen(screen: CurrentScreen) {
+        Log.i("RVM", "updateCurrentScreen " + screen.title)
+        viewModelScope.launch {
+            try {
+                _viewState.value = _viewState.value.copy(currentScreen = screen)
+            } catch (e: Exception) {
+                _viewState.value = _viewState.value.copy(
+                    error = e.toString()
+                )
+            }
+        }
+    }
+
     /**
-     * callbacks for ui
+     * callbacks for ui ///////////////////////////////////////////////////////////////////////////////////////////////
      */
-    fun randomScreen() {
 
+
+    fun onValueChanged(search: String) {
+        Log.i("RVM", "onValueChanged")
+        viewModelScope.launch {
+            try {
+                _searchString.value = search
+                if (_searchString.value.isNotBlank()) {
+                    _viewState.value = _viewState.value.copy(
+                        error = "",
+                    )
+                    fetchSearchMeals()
+                }
+            } catch (e: Exception) {
+                _viewState.value = _viewState.value.copy(
+                    error = e.toString()
+                )
+            }
+
+        }
     }
 
-    fun searchScreen() {
+    fun loadListFromCategory(category: Category) {
+        viewModelScope.launch {
+            Log.i("RVM", "loadListFromCategory " + category.strCategory)
+            try {
+                updateCurrentScreen(CurrentScreen.Search())
+                val response: MealResponse? =
+                    recipeService?.getSearchCategoryMeals(searchString.value)
+                response?.let { _meals.value = it.meals ?: listOf(Meal()) }
 
+                _viewState.value = _viewState.value.copy(
+                    error = "",
+                )
+            } catch (e: Exception) {
+                _viewState.value = _viewState.value.copy(
+                    error = e.toString()
+                )
+            }
+        }
     }
 
-    fun displayCategory() {
-        //implement the request to network
-        _viewState.value.currentScreen = CurrentScreen.Search()
+    fun loadDetailFromMeal(meal: Meal) {
+        Log.i("RVM", "loadDetailsFromMeal")
+        viewModelScope.launch {
+            try {
+                _meal.value = meal
+                updateCurrentScreen(CurrentScreen.Detail())
+                _viewState.value = _viewState.value.copy(
+                    error = "",
+                )
+            } catch (e: Exception) {
+                _viewState.value = _viewState.value.copy(
+                    error = e.toString()
+                )
+            }
+
+        }
     }
-    fun onValueChanged(search : String){
-        _searchString.value = search
-    }
+
 
     enum class Screens { CATEGORY, SEARCH, DETAIL }
     sealed class CurrentScreen(val title: String, val screens: Screens) {

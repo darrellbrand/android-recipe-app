@@ -1,9 +1,8 @@
 package com.example.recipeapp
 
 data class ViewState(
-    val meal: Meal = Meal(),
     val error: String = "",
-    var currentScreen: RecipeViewModel.CurrentScreen = RecipeViewModel.CurrentScreen.Search(),
+    var currentScreen: RecipeViewModel.CurrentScreen = RecipeViewModel.CurrentScreen.Category(),
 )
 
 data class MealResponse(
@@ -22,7 +21,7 @@ data class CategoryResponse(
 )
 
 data class Meal(
-    val meals: String? = null,
+   // val meals: String? = null,
     val idMeal: String?= null ,
     val strMealThumb:  String? =null,
     val strMeal: String ?= null,
