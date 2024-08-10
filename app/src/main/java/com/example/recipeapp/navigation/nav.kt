@@ -46,8 +46,11 @@ fun AppNav(
             )
         }
         composable(RecipeViewModel.CurrentScreen.Home().title) {
-            HomeScreen({ recipeViewModel.updateCurrentScreen(RecipeViewModel.CurrentScreen.Category()) },
-                { recipeViewModel.updateCurrentScreen(RecipeViewModel.CurrentScreen.Search()) })
+            HomeScreen({
+                recipeViewModel.updateCurrentScreen(RecipeViewModel.CurrentScreen.Category())
+            }, {
+                recipeViewModel.updateCurrentScreen(RecipeViewModel.CurrentScreen.Search())
+            })
         }
     }
 }

@@ -113,11 +113,23 @@ class RecipeViewModel : ViewModel() {
         Log.i("RVM", "updateCurrentScreen " + screen.title)
         viewModelScope.launch {
             try {
+                //clearSearchIfNeeded(screen)
                 _viewState.value = _viewState.value.copy(currentScreen = screen)
             } catch (e: Exception) {
                 _viewState.value = _viewState.value.copy(
                     error = e.toString()
                 )
+            }
+        }
+    }
+
+    private fun clearSearchIfNeeded(screen: CurrentScreen) {
+        _searchString.value = when (screen) {
+            is CurrentScreen.Category -> ""
+            is CurrentScreen.Detail -> ""
+            is CurrentScreen.Home -> ""
+            is CurrentScreen.Search -> {
+                _searchString.value
             }
         }
     }
@@ -132,12 +144,10 @@ class RecipeViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 _searchString.value = search
-                if (_searchString.value.isNotBlank()) {
-                    _viewState.value = _viewState.value.copy(
-                        error = "",
-                    )
-                    fetchSearchMeals()
-                }
+                _viewState.value = _viewState.value.copy(
+                    error = "",
+                )
+                fetchSearchMeals()
             } catch (e: Exception) {
                 _viewState.value = _viewState.value.copy(
                     error = e.toString()
@@ -155,7 +165,6 @@ class RecipeViewModel : ViewModel() {
                     recipeService?.getSearchCategoryMeals(category.strCategory)
                 response?.let { _meals.value = it.meals ?: listOf(Meal()) }
                 updateCurrentScreen(CurrentScreen.Search())
-                _searchString.value = ""
                 _viewState.value = _viewState.value.copy(
                     error = "",
                 )

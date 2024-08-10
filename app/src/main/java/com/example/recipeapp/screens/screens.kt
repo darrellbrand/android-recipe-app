@@ -46,7 +46,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.input.pointer.motionEventSpy
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -152,9 +151,11 @@ fun MainApp(
                         RecipeViewModel.CurrentScreen.Category().title
                     )
 
-                    is RecipeViewModel.CurrentScreen.Search -> navController.navigate(
-                        RecipeViewModel.CurrentScreen.Search().title
-                    )
+                    is RecipeViewModel.CurrentScreen.Search -> {
+                        navController.navigate(
+                            RecipeViewModel.CurrentScreen.Search().title
+                        )
+                    }
 
                     is RecipeViewModel.CurrentScreen.Detail -> navController.navigate(
                         RecipeViewModel.CurrentScreen.Detail().title
@@ -178,10 +179,11 @@ fun handleBackButton(
             RecipeViewModel.CurrentScreen.Category()
         )
 
-        is RecipeViewModel.CurrentScreen.Search -> onBack(
-            RecipeViewModel.CurrentScreen.Category()
-        )
-
+        is RecipeViewModel.CurrentScreen.Search -> {
+            onBack(
+                RecipeViewModel.CurrentScreen.Category()
+            )
+        }
         is RecipeViewModel.CurrentScreen.Detail -> onBack(
             RecipeViewModel.CurrentScreen.Search()
         )
