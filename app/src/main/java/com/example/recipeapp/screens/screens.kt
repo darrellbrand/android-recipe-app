@@ -79,8 +79,6 @@ fun MainApp(
     val meals by recipeViewModel.meals.collectAsState(initial = listOf(Meal()))
     val searchString by recipeViewModel.searchString.collectAsState()
     val meal by recipeViewModel.meal.collectAsState()
-    // Observe the current back stack entry
-    val currentBackStackEntry by navController.currentBackStackEntryAsState()
     val title = when (viewState.currentScreen) {
         is RecipeViewModel.CurrentScreen.Category -> "Recipe Category"
         is RecipeViewModel.CurrentScreen.Detail -> "Recipe Instructions"
