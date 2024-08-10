@@ -256,6 +256,7 @@ fun SearchList(
 
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Log.i("screens", "search = $searchString meals= ${list.size} = $list")
+        onValueChanged(searchString)
         TextField(
             value = searchString,
             label = { Text(text = "Search", style = MaterialTheme.typography.titleMedium) },
