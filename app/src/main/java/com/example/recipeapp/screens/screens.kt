@@ -1,8 +1,10 @@
 package com.example.recipeapp.screens
 
 
+import android.annotation.SuppressLint
 import android.util.Log
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -67,7 +69,8 @@ import com.example.recipeapp.navigation.AppNav
 import com.example.recipeapp.ui.theme.RecipeAppTheme
 
 
-@OptIn(ExperimentalMaterial3Api::class)
+@SuppressLint("UnusedContentLambdaTargetStateParameter")
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class)
 @Composable
 fun MainApp(
 ) {
@@ -258,7 +261,9 @@ fun SearchList(
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.background(MaterialTheme.colorScheme.primary).fillMaxHeight()
+        modifier = Modifier
+            .background(MaterialTheme.colorScheme.primary)
+            .fillMaxHeight()
     ) {
         Log.i("screens", "search = $searchString meals= ${list.size} = $list")
         Spacer(modifier = Modifier.size(10.dp))
