@@ -146,7 +146,6 @@ fun MainApp(
                             RecipeViewModel.CurrentScreen.Search().title
                         ) { launchSingleTop = true }
                     }
-
                     is RecipeViewModel.CurrentScreen.Detail -> navController.navigate(
                         RecipeViewModel.CurrentScreen.Detail().title
                     ) { launchSingleTop = true }
@@ -185,11 +184,11 @@ fun handleBackPress(navController: NavHostController, recipeViewModel: RecipeVie
             RecipeViewModel.CurrentScreen.Filter().title -> {
                 recipeViewModel.updateCurrentScreen(RecipeViewModel.CurrentScreen.Filter())
             }
-
             RecipeViewModel.CurrentScreen.Home().title -> {
                 recipeViewModel.updateCurrentScreen(RecipeViewModel.CurrentScreen.Home())
             }
         }
+
     }
 }
 

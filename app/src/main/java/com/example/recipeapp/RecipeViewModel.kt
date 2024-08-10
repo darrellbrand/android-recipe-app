@@ -128,7 +128,10 @@ class RecipeViewModel : ViewModel() {
             is CurrentScreen.Category -> ""
             is CurrentScreen.Detail -> ""
             is CurrentScreen.Home -> ""
-            is CurrentScreen.Search,
+            is CurrentScreen.Search-> {
+                clearList()
+                _searchString.value
+            }
             is CurrentScreen.Filter -> {
                 _searchString.value
             }
@@ -198,7 +201,18 @@ class RecipeViewModel : ViewModel() {
             }
         }
     }
-
+    fun clearList(){
+        Log.i("RVM", "clearList")
+        viewModelScope.launch {
+            try {
+               _meals.value = listOf(Meal())
+            } catch (e: Exception) {
+                _viewState.value = _viewState.value.copy(
+                    error = e.toString()
+                )
+            }
+        }
+    }
     enum class Screens { CATEGORY, SEARCH, DETAIL, HOME, FILTER }
     sealed class CurrentScreen(val title: String, val screens: Screens) {
         class Category : CurrentScreen(Screens.CATEGORY.name, Screens.CATEGORY)
