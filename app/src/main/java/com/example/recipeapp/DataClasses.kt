@@ -2,7 +2,7 @@ package com.example.recipeapp
 
 data class ViewState(
     val error: String = "",
-    var currentScreen: RecipeViewModel.CurrentScreen = RecipeViewModel.CurrentScreen.Category(),
+    var currentScreen: RecipeViewModel.CurrentScreen = RecipeViewModel.CurrentScreen.Home(),
 )
 
 data class MealResponse(

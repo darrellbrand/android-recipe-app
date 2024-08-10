@@ -20,7 +20,6 @@ class RecipeViewModel : ViewModel() {
     private val _categories = MutableStateFlow(listOf(Category()))
     val categories = _categories.asStateFlow()
 
-
     private val _meals = MutableStateFlow(listOf(Meal()))
     val meals = _meals.asStateFlow().combine(_searchString) { meals: List<Meal>, s: String ->
         if (s.isBlank()) {
@@ -36,6 +35,7 @@ class RecipeViewModel : ViewModel() {
 
     init {
         fetchCategories()
+        CurrentScreen.Home().also { _viewState.value.currentScreen = it }
     }
 
     fun fetchRandomMeal() {
@@ -53,7 +53,6 @@ class RecipeViewModel : ViewModel() {
                     error = e.toString()
                 )
             }
-
         }
     }
 
@@ -71,7 +70,6 @@ class RecipeViewModel : ViewModel() {
                     error = e.toString()
                 )
             }
-
         }
     }
 
@@ -91,9 +89,7 @@ class RecipeViewModel : ViewModel() {
                     error = e.toString()
                 )
             }
-
         }
-
     }
 
     fun fetchSearchMeals() {
@@ -110,7 +106,6 @@ class RecipeViewModel : ViewModel() {
                     error = e.toString()
                 )
             }
-
         }
     }
 
@@ -148,7 +143,6 @@ class RecipeViewModel : ViewModel() {
                     error = e.toString()
                 )
             }
-
         }
     }
 
@@ -187,17 +181,14 @@ class RecipeViewModel : ViewModel() {
                     error = e.toString()
                 )
             }
-
         }
     }
 
-
-    enum class Screens { CATEGORY, SEARCH, DETAIL }
+    enum class Screens { CATEGORY, SEARCH, DETAIL, HOME }
     sealed class CurrentScreen(val title: String, val screens: Screens) {
         class Category : CurrentScreen(Screens.CATEGORY.name, Screens.CATEGORY)
         class Search : CurrentScreen(Screens.SEARCH.name, Screens.SEARCH)
         class Detail : CurrentScreen(Screens.DETAIL.name, Screens.DETAIL)
+        class Home : CurrentScreen(Screens.HOME.name, Screens.HOME)
     }
-
-
 }

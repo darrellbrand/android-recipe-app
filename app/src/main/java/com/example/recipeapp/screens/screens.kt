@@ -3,6 +3,7 @@ package com.example.recipeapp.screens
 
 import android.util.Log
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -24,6 +26,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -35,6 +38,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -45,12 +49,10 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.example.recipeapp.Category
@@ -75,28 +77,24 @@ fun MainApp(
     val searchString by recipeViewModel.searchString.collectAsState()
     val meal by recipeViewModel.meal.collectAsState()
     val title = when (viewState.currentScreen) {
-        is RecipeViewModel.CurrentScreen.Category -> RecipeViewModel.CurrentScreen.Category().title
-        is RecipeViewModel.CurrentScreen.Detail -> RecipeViewModel.CurrentScreen.Detail().title
-        is RecipeViewModel.CurrentScreen.Search -> RecipeViewModel.CurrentScreen.Search().title
+        is RecipeViewModel.CurrentScreen.Category -> "Recipe Category"
+        is RecipeViewModel.CurrentScreen.Detail -> "Recipe Instructions"
+        is RecipeViewModel.CurrentScreen.Search -> "Recipe Search"
+        is RecipeViewModel.CurrentScreen.Home -> "Recipe King"
     }
     RecipeAppTheme {
         Scaffold(topBar = {
             TopAppBar(
                 title = {
-                    Column {
-                        Text(
-                            text = title,
-                            textAlign = TextAlign.Center,
-                        )
-                    }
+                    Text(text = title)
 
                 },
-                //colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
                 navigationIcon = {
                     IconButton(onClick = {
                         when (viewState.currentScreen) {
                             is RecipeViewModel.CurrentScreen.Category -> recipeViewModel.updateCurrentScreen(
-                                RecipeViewModel.CurrentScreen.Category()
+                                RecipeViewModel.CurrentScreen.Home()
                             )
 
                             is RecipeViewModel.CurrentScreen.Search -> recipeViewModel.updateCurrentScreen(
@@ -106,11 +104,15 @@ fun MainApp(
                             is RecipeViewModel.CurrentScreen.Detail -> recipeViewModel.updateCurrentScreen(
                                 RecipeViewModel.CurrentScreen.Search()
                             )
+
+                            is RecipeViewModel.CurrentScreen.Home -> recipeViewModel.updateCurrentScreen(
+                                RecipeViewModel.CurrentScreen.Home()
+                            )
                         }
                     }) {
                         Icon(
                             imageVector = Icons.Filled.ArrowBack,
-                            contentDescription = "Localized description"
+                            ""
                         )
                     }
                 },
@@ -122,7 +124,6 @@ fun MainApp(
                 AppNav(
                     recipeViewModel = recipeViewModel,
                     navController = navController,
-                    viewState = viewState,
                     meals = meals,
                     searchString = searchString,
                     meal = meal,
@@ -143,12 +144,13 @@ fun MainApp(
                     is RecipeViewModel.CurrentScreen.Detail -> navController.navigate(
                         RecipeViewModel.CurrentScreen.Detail().title
                     )
+
+                    is RecipeViewModel.CurrentScreen.Home -> navController.navigate(
+                        RecipeViewModel.CurrentScreen.Home().title
+                    )
                 }
-
             }
-
         }
-
     }
 }
 
@@ -160,13 +162,14 @@ fun handleBackButton(
         is RecipeViewModel.CurrentScreen.Category -> onBack(
             RecipeViewModel.CurrentScreen.Category()
         )
-
         is RecipeViewModel.CurrentScreen.Search -> onBack(
             RecipeViewModel.CurrentScreen.Category()
         )
-
         is RecipeViewModel.CurrentScreen.Detail -> onBack(
             RecipeViewModel.CurrentScreen.Search()
+        )
+        is RecipeViewModel.CurrentScreen.Home -> onBack(
+            RecipeViewModel.CurrentScreen.Home()
         )
     }
 }
@@ -197,8 +200,6 @@ fun CategoryItem(category: Category, block: (Category) -> Unit) {
             .clickable { block(category) }
             .clip(RoundedCornerShape(15.dp)),
     ) {
-
-
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
@@ -222,7 +223,6 @@ fun CategoryItem(category: Category, block: (Category) -> Unit) {
             )
         }
     }
-
 }
 
 
@@ -254,9 +254,12 @@ fun SearchList(
                 )
             },
         )
-        LazyColumn() {
-            items(list) { meal ->
-                MealItem(meal = meal, onClick)
+        if (list.isNotEmpty() && list.firstOrNull()?.strMeal?.isNotEmpty() == true) {
+            println("list " + list.size)
+            LazyColumn() {
+                items(list) { meal ->
+                    MealItem(meal = meal, onClick)
+                }
             }
         }
     }
@@ -264,14 +267,11 @@ fun SearchList(
 
 @Composable
 fun MealItem(meal: Meal, onClick: (meal: Meal) -> Unit) {
-
     Card(
         elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
         modifier = Modifier
             .clickable { onClick(meal) }
             .padding(5.dp)) {
-
-
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth(),
@@ -360,3 +360,39 @@ fun DetailsScreen(meal: Meal) {
     }
 }
 
+@Preview
+@Composable
+fun HomeScreen(onCategoryClick: () -> Unit = {}, onSearchClick: () -> Unit = {}) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .fillMaxHeight(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.logo_color),
+            contentDescription = "",
+            modifier = Modifier
+                .clip(
+                    RoundedCornerShape(15.dp)
+                )
+                .size(200.dp)
+        )
+        Button(
+            onClick = { onCategoryClick() }, modifier = Modifier
+                .fillMaxWidth()
+                .padding(5.dp)
+        ) {
+            Text(text = "Recipe Categories")
+        }
+        Button(
+            onClick = { onSearchClick() }, modifier = Modifier
+                .fillMaxWidth()
+                .padding(5.dp)
+        ) {
+            Text(text = "Recipe Search")
+        }
+    }
+
+}

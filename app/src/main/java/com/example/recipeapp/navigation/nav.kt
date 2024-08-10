@@ -10,6 +10,7 @@ import com.example.recipeapp.RecipeViewModel
 import com.example.recipeapp.ViewState
 import com.example.recipeapp.screens.CategoryScreen
 import com.example.recipeapp.screens.DetailsScreen
+import com.example.recipeapp.screens.HomeScreen
 import com.example.recipeapp.screens.SearchList
 
 
@@ -17,7 +18,6 @@ import com.example.recipeapp.screens.SearchList
 fun AppNav(
     recipeViewModel: RecipeViewModel,
     navController: NavHostController,
-    viewState: ViewState,
     meals: List<Meal>,
     searchString: String,
     meal: Meal,
@@ -25,7 +25,7 @@ fun AppNav(
 ) {
     NavHost(
         navController = navController,
-        startDestination = viewState.currentScreen.title
+        startDestination = RecipeViewModel.CurrentScreen.Home().title
     ) {
         composable(RecipeViewModel.CurrentScreen.Category().title) {
             CategoryScreen(
@@ -44,6 +44,10 @@ fun AppNav(
                 onValueChanged = recipeViewModel::onValueChanged,
                 onClick = recipeViewModel::loadDetailFromMeal
             )
+        }
+        composable(RecipeViewModel.CurrentScreen.Home().title) {
+            HomeScreen({ recipeViewModel.updateCurrentScreen(RecipeViewModel.CurrentScreen.Category()) },
+                { recipeViewModel.updateCurrentScreen(RecipeViewModel.CurrentScreen.Search()) })
         }
     }
 }
