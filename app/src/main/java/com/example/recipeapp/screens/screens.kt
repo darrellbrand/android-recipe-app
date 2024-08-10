@@ -258,7 +258,7 @@ fun SearchList(
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.background(MaterialTheme.colorScheme.primary)
+        modifier = Modifier.background(MaterialTheme.colorScheme.primary).fillMaxHeight()
     ) {
         Log.i("screens", "search = $searchString meals= ${list.size} = $list")
         Spacer(modifier = Modifier.size(10.dp))
