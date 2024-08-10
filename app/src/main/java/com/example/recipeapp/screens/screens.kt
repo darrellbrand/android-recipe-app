@@ -54,6 +54,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.example.recipeapp.Category
@@ -77,11 +79,14 @@ fun MainApp(
     val meals by recipeViewModel.meals.collectAsState(initial = listOf(Meal()))
     val searchString by recipeViewModel.searchString.collectAsState()
     val meal by recipeViewModel.meal.collectAsState()
+    // Observe the current back stack entry
+    val currentBackStackEntry by navController.currentBackStackEntryAsState()
     val title = when (viewState.currentScreen) {
         is RecipeViewModel.CurrentScreen.Category -> "Recipe Category"
         is RecipeViewModel.CurrentScreen.Detail -> "Recipe Instructions"
         is RecipeViewModel.CurrentScreen.Search -> "Recipe Search"
         is RecipeViewModel.CurrentScreen.Home -> "Recipe King"
+        is RecipeViewModel.CurrentScreen.Filter -> "Recipe Filter"
     }
     RecipeAppTheme {
         Scaffold(topBar = {
@@ -93,23 +98,8 @@ fun MainApp(
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
                 navigationIcon = {
                     IconButton(onClick = {
-                        when (viewState.currentScreen) {
-                            is RecipeViewModel.CurrentScreen.Category -> recipeViewModel.updateCurrentScreen(
-                                RecipeViewModel.CurrentScreen.Home()
-                            )
+                        handleBackPress(navController, recipeViewModel)
 
-                            is RecipeViewModel.CurrentScreen.Search -> recipeViewModel.updateCurrentScreen(
-                                RecipeViewModel.CurrentScreen.Category()
-                            )
-
-                            is RecipeViewModel.CurrentScreen.Detail -> recipeViewModel.updateCurrentScreen(
-                                RecipeViewModel.CurrentScreen.Search()
-                            )
-
-                            is RecipeViewModel.CurrentScreen.Home -> recipeViewModel.updateCurrentScreen(
-                                RecipeViewModel.CurrentScreen.Home()
-                            )
-                        }
                     }) {
                         Icon(
                             imageVector = Icons.Filled.ArrowBack,
@@ -131,9 +121,9 @@ fun MainApp(
                     }
                 }
             )
-        }) {
+        }) { values ->
             Surface(
-                modifier = Modifier.padding(it),
+                modifier = Modifier.padding(values),
             ) {
                 AppNav(
                     recipeViewModel = recipeViewModel,
@@ -144,56 +134,64 @@ fun MainApp(
                     categories = categories
                 )
                 BackHandler(enabled = true) {
-                    handleBackButton(viewState, recipeViewModel::updateCurrentScreen)
+                    handleBackPress(navController, recipeViewModel)
                 }
                 when (viewState.currentScreen) {
                     is RecipeViewModel.CurrentScreen.Category -> navController.navigate(
                         RecipeViewModel.CurrentScreen.Category().title
-                    )
+                    ) { launchSingleTop = true }
 
                     is RecipeViewModel.CurrentScreen.Search -> {
                         navController.navigate(
                             RecipeViewModel.CurrentScreen.Search().title
-                        )
+                        ) { launchSingleTop = true }
                     }
 
                     is RecipeViewModel.CurrentScreen.Detail -> navController.navigate(
                         RecipeViewModel.CurrentScreen.Detail().title
-                    )
+                    ) { launchSingleTop = true }
 
                     is RecipeViewModel.CurrentScreen.Home -> navController.navigate(
                         RecipeViewModel.CurrentScreen.Home().title
-                    )
+                    ) { launchSingleTop = true }
+
+                    is RecipeViewModel.CurrentScreen.Filter -> navController.navigate(
+                        RecipeViewModel.CurrentScreen.Filter().title
+                    ) { launchSingleTop = true }
                 }
             }
         }
     }
 }
 
-fun handleBackButton(
-    viewState: ViewState,
-    onBack: (screen: RecipeViewModel.CurrentScreen) -> Unit
-) {
-    when (viewState.currentScreen) {
-        is RecipeViewModel.CurrentScreen.Category -> onBack(
-            RecipeViewModel.CurrentScreen.Category()
-        )
+fun handleBackPress(navController: NavHostController, recipeViewModel: RecipeViewModel) {
+    val ret = navController.popBackStack()
+    println(ret)
+    navController.currentBackStackEntry?.destination?.route?.let {
 
-        is RecipeViewModel.CurrentScreen.Search -> {
-            onBack(
-                RecipeViewModel.CurrentScreen.Category()
-            )
+        when (it) {
+            RecipeViewModel.CurrentScreen.Category().title -> {
+                recipeViewModel.updateCurrentScreen(RecipeViewModel.CurrentScreen.Category())
+            }
+
+            RecipeViewModel.CurrentScreen.Search().title -> {
+                recipeViewModel.updateCurrentScreen(RecipeViewModel.CurrentScreen.Search())
+            }
+
+            RecipeViewModel.CurrentScreen.Detail().title -> {
+                recipeViewModel.updateCurrentScreen(RecipeViewModel.CurrentScreen.Detail())
+            }
+
+            RecipeViewModel.CurrentScreen.Filter().title -> {
+                recipeViewModel.updateCurrentScreen(RecipeViewModel.CurrentScreen.Filter())
+            }
+
+            RecipeViewModel.CurrentScreen.Home().title -> {
+                recipeViewModel.updateCurrentScreen(RecipeViewModel.CurrentScreen.Home())
+            }
         }
-        is RecipeViewModel.CurrentScreen.Detail -> onBack(
-            RecipeViewModel.CurrentScreen.Search()
-        )
-
-        is RecipeViewModel.CurrentScreen.Home -> onBack(
-            RecipeViewModel.CurrentScreen.Home()
-        )
     }
 }
-
 
 @Composable
 fun CategoryScreen(
@@ -256,14 +254,14 @@ fun SearchList(
 
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Log.i("screens", "search = $searchString meals= ${list.size} = $list")
-        onValueChanged(searchString)
         TextField(
             value = searchString,
             label = { Text(text = "Search", style = MaterialTheme.typography.titleMedium) },
             onValueChange = onValueChanged,
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(15.dp)).padding(2.dp),
+                .clip(RoundedCornerShape(15.dp))
+                .padding(2.dp),
             textStyle = TextStyle(
                 textAlign = TextAlign.Start,
                 fontSize = 20.sp

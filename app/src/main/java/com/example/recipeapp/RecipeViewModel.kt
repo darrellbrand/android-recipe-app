@@ -56,7 +56,7 @@ class RecipeViewModel : ViewModel() {
         }
     }
 
-    fun fetchDetailMeals(meal: Meal) {
+    private fun fetchDetailMeals(meal: Meal) {
         viewModelScope.launch {
             Log.i("RVM", "fetchDetailMeals")
             try {
@@ -73,7 +73,7 @@ class RecipeViewModel : ViewModel() {
         }
     }
 
-    fun fetchCategories() {
+    private fun fetchCategories() {
         viewModelScope.launch {
             Log.i("RVM", "fetchCategory")
             try {
@@ -92,7 +92,7 @@ class RecipeViewModel : ViewModel() {
         }
     }
 
-    fun fetchSearchMeals() {
+    private fun fetchSearchMeals() {
         viewModelScope.launch {
             Log.i("RVM", "fetchSearchMeals")
             try {
@@ -113,7 +113,7 @@ class RecipeViewModel : ViewModel() {
         Log.i("RVM", "updateCurrentScreen " + screen.title)
         viewModelScope.launch {
             try {
-                //clearSearchIfNeeded(screen)
+                clearSearchIfNeeded(screen)
                 _viewState.value = _viewState.value.copy(currentScreen = screen)
             } catch (e: Exception) {
                 _viewState.value = _viewState.value.copy(
@@ -128,7 +128,8 @@ class RecipeViewModel : ViewModel() {
             is CurrentScreen.Category -> ""
             is CurrentScreen.Detail -> ""
             is CurrentScreen.Home -> ""
-            is CurrentScreen.Search -> {
+            is CurrentScreen.Search,
+            is CurrentScreen.Filter -> {
                 _searchString.value
             }
         }
@@ -147,7 +148,13 @@ class RecipeViewModel : ViewModel() {
                 _viewState.value = _viewState.value.copy(
                     error = "",
                 )
-                fetchSearchMeals()
+                when (_viewState.value.currentScreen) {
+                    is CurrentScreen.Category -> {}
+                    is CurrentScreen.Detail -> {}
+                    is CurrentScreen.Home -> {}
+                    is CurrentScreen.Search -> fetchSearchMeals()
+                    is CurrentScreen.Filter -> {}
+                }
             } catch (e: Exception) {
                 _viewState.value = _viewState.value.copy(
                     error = e.toString()
@@ -160,11 +167,10 @@ class RecipeViewModel : ViewModel() {
         viewModelScope.launch {
             Log.i("RVM", "loadListFromCategory " + category.strCategory)
             try {
-
                 val response: MealResponse? =
                     recipeService?.getSearchCategoryMeals(category.strCategory)
                 response?.let { _meals.value = it.meals ?: listOf(Meal()) }
-                updateCurrentScreen(CurrentScreen.Search())
+                updateCurrentScreen(CurrentScreen.Filter())
                 _viewState.value = _viewState.value.copy(
                     error = "",
                 )
@@ -193,11 +199,12 @@ class RecipeViewModel : ViewModel() {
         }
     }
 
-    enum class Screens { CATEGORY, SEARCH, DETAIL, HOME }
+    enum class Screens { CATEGORY, SEARCH, DETAIL, HOME, FILTER }
     sealed class CurrentScreen(val title: String, val screens: Screens) {
         class Category : CurrentScreen(Screens.CATEGORY.name, Screens.CATEGORY)
         class Search : CurrentScreen(Screens.SEARCH.name, Screens.SEARCH)
         class Detail : CurrentScreen(Screens.DETAIL.name, Screens.DETAIL)
         class Home : CurrentScreen(Screens.HOME.name, Screens.HOME)
+        class Filter : CurrentScreen(Screens.FILTER.name, Screens.FILTER)
     }
 }

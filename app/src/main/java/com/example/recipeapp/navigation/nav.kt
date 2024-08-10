@@ -7,7 +7,6 @@ import androidx.navigation.compose.composable
 import com.example.recipeapp.Category
 import com.example.recipeapp.Meal
 import com.example.recipeapp.RecipeViewModel
-import com.example.recipeapp.ViewState
 import com.example.recipeapp.screens.CategoryScreen
 import com.example.recipeapp.screens.DetailsScreen
 import com.example.recipeapp.screens.HomeScreen
@@ -38,6 +37,14 @@ fun AppNav(
             DetailsScreen(meal = meal)
         }
         composable(RecipeViewModel.CurrentScreen.Search().title) {
+            SearchList(
+                list = meals,
+                searchString = searchString,
+                onValueChanged = recipeViewModel::onValueChanged,
+                onClick = recipeViewModel::loadDetailFromMeal
+            )
+        }
+        composable(RecipeViewModel.CurrentScreen.Filter().title) {
             SearchList(
                 list = meals,
                 searchString = searchString,
