@@ -4,7 +4,7 @@ import java.lang.StringBuilder
 
 fun getIngredientsString(meal: Meal): String {
 
-    var map = HashMap<String, String>()
+    val map = HashMap<String, String>()
 
     map[meal.strIngredient1 ?: ""] = meal.strMeasure1 ?: ""
     map[meal.strIngredient2 ?: ""] = meal.strMeasure2 ?: ""

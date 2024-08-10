@@ -57,6 +57,24 @@ class RecipeViewModel : ViewModel() {
         }
     }
 
+    fun fetchDetailMeals(meal: Meal) {
+        viewModelScope.launch {
+            Log.i("RVM", "fetchDetailMeals")
+            try {
+                val response: MealResponse? = meal.idMeal?.let { recipeService?.getDetailMeal(it) }
+                _meal.value = response?.meals?.firstOrNull() ?: Meal()
+                _viewState.value = _viewState.value.copy(
+                    error = "",
+                )
+            } catch (e: Exception) {
+                _viewState.value = _viewState.value.copy(
+                    error = e.toString()
+                )
+            }
+
+        }
+    }
+
     fun fetchCategories() {
         viewModelScope.launch {
             Log.i("RVM", "fetchCategory")
@@ -138,11 +156,12 @@ class RecipeViewModel : ViewModel() {
         viewModelScope.launch {
             Log.i("RVM", "loadListFromCategory " + category.strCategory)
             try {
-                updateCurrentScreen(CurrentScreen.Search())
-                val response: MealResponse? =
-                    recipeService?.getSearchCategoryMeals(searchString.value)
-                response?.let { _meals.value = it.meals ?: listOf(Meal()) }
 
+                val response: MealResponse? =
+                    recipeService?.getSearchCategoryMeals(category.strCategory)
+                response?.let { _meals.value = it.meals ?: listOf(Meal()) }
+                updateCurrentScreen(CurrentScreen.Search())
+                _searchString.value = ""
                 _viewState.value = _viewState.value.copy(
                     error = "",
                 )
@@ -158,7 +177,7 @@ class RecipeViewModel : ViewModel() {
         Log.i("RVM", "loadDetailsFromMeal")
         viewModelScope.launch {
             try {
-                _meal.value = meal
+                fetchDetailMeals(meal)
                 updateCurrentScreen(CurrentScreen.Detail())
                 _viewState.value = _viewState.value.copy(
                     error = "",
