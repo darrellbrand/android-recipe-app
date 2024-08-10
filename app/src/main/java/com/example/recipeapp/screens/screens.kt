@@ -260,7 +260,7 @@ fun SearchList(
             onValueChange = onValueChanged,
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(15.dp)),//.padding(5.dp),
+                .clip(RoundedCornerShape(15.dp)).padding(2.dp),
             textStyle = TextStyle(
                 textAlign = TextAlign.Start,
                 fontSize = 20.sp
