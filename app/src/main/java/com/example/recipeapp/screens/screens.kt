@@ -47,7 +47,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -57,14 +56,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.example.recipeapp.Category
 import com.example.recipeapp.Meal
 import com.example.recipeapp.R
 import com.example.recipeapp.RecipeViewModel
-import com.example.recipeapp.ViewState
 import com.example.recipeapp.getIngredientsString
 import com.example.recipeapp.navigation.AppNav
 import com.example.recipeapp.ui.theme.RecipeAppTheme
@@ -92,10 +89,14 @@ fun MainApp(
         Scaffold(topBar = {
             TopAppBar(
                 title = {
-                    Text(text = title)
+                    Text(
+                        text = title,
+                        style = MaterialTheme.typography.headlineLarge,
+                        color = MaterialTheme.colorScheme.onPrimary
+                    )
 
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.primary),
                 navigationIcon = {
                     IconButton(onClick = {
                         handleBackPress(navController, recipeViewModel)
@@ -199,11 +200,11 @@ fun CategoryScreen(
     categories: List<Category>,
     onClick: (category: Category) -> Unit
 ) {
-    LazyVerticalGrid(
-        GridCells.Adaptive(150.dp)
-    ) {
-        items(categories) { category ->
-            Box(modifier = Modifier.background(MaterialTheme.colorScheme.background)) {
+    Box(modifier = Modifier.background(MaterialTheme.colorScheme.primary)) {
+        LazyVerticalGrid(
+            columns = GridCells.Adaptive(150.dp)
+        ) {
+            items(categories) { category ->
                 CategoryItem(category = category, onClick)
             }
         }
@@ -220,7 +221,7 @@ fun CategoryItem(category: Category, block: (Category) -> Unit) {
             .padding(5.dp)
             .clickable { block(category) }
             .clip(RoundedCornerShape(15.dp)),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -255,7 +256,10 @@ fun SearchList(
     onClick: (meal: Meal) -> Unit
 ) {
 
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.background(MaterialTheme.colorScheme.primary)
+    ) {
         Log.i("screens", "search = $searchString meals= ${list.size} = $list")
         Spacer(modifier = Modifier.size(10.dp))
         TextField(
@@ -300,7 +304,7 @@ fun MealItem(meal: Meal, onClick: (meal: Meal) -> Unit) {
             .clickable { onClick(meal) }
             .padding(2.dp)
             .clip(RoundedCornerShape(15.dp)),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)) {
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth(),
@@ -311,7 +315,7 @@ fun MealItem(meal: Meal, onClick: (meal: Meal) -> Unit) {
                 contentScale = ContentScale.FillBounds,
                 placeholder = painterResource(id = R.drawable.excerpt_lazy_load),
                 modifier = Modifier
-                    .size(60.dp)
+                    .size(100.dp)
                     .clip(RoundedCornerShape(10.dp))//.height(200.dp).width(200.dp)
 
             )
@@ -349,7 +353,7 @@ fun DetailsScreen(meal: Meal) {
         ) {
             Text(
                 text = meal.strMeal ?: "",
-                style = MaterialTheme.typography.titleLarge,
+                style = MaterialTheme.typography.headlineSmall,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(5.dp),
@@ -373,7 +377,7 @@ fun DetailsScreen(meal: Meal) {
             }
             Text(
                 text = "Instructions",
-                style = MaterialTheme.typography.titleMedium,
+                style = MaterialTheme.typography.headlineSmall,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(5.dp),
@@ -382,7 +386,7 @@ fun DetailsScreen(meal: Meal) {
             meal.strInstructions?.let { it ->
                 Text(
                     text = "$it \n $ingredients",
-                    style = MaterialTheme.typography.bodyLarge,
+                    style = MaterialTheme.typography.titleLarge,
                     modifier = Modifier.padding(25.dp),
                     textAlign = TextAlign.Left
                 )
@@ -395,12 +399,12 @@ fun DetailsScreen(meal: Meal) {
 @Preview(showBackground = true)
 @Composable
 fun HomeScreen(onCategoryClick: () -> Unit = {}, onSearchClick: () -> Unit = {}) {
-    val scrollState = rememberScrollState()
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .fillMaxHeight()
-            .verticalScroll(rememberScrollState()),
+            .verticalScroll(rememberScrollState())
+            .background(MaterialTheme.colorScheme.primaryContainer),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -415,19 +419,20 @@ fun HomeScreen(onCategoryClick: () -> Unit = {}, onSearchClick: () -> Unit = {})
                 .size(300.dp),
             contentScale = ContentScale.FillBounds
         )
+        Spacer(modifier = Modifier.size(50.dp))
         Button(
             onClick = { onCategoryClick() }, modifier = Modifier
                 .fillMaxWidth()
                 .padding(5.dp)
         ) {
-            Text(text = "Recipe Categories")
+            Text(text = "Recipe Categories", style = MaterialTheme.typography.headlineSmall)
         }
         Button(
             onClick = { onSearchClick() }, modifier = Modifier
                 .fillMaxWidth()
                 .padding(5.dp)
         ) {
-            Text(text = "Recipe Search")
+            Text(text = "Recipe Search", style = MaterialTheme.typography.headlineSmall)
         }
     }
 }
