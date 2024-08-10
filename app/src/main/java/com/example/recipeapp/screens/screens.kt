@@ -25,6 +25,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -45,6 +46,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.input.pointer.motionEventSpy
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -116,6 +118,19 @@ fun MainApp(
                         )
                     }
                 },
+                actions = {
+                    IconButton(onClick = {
+                        recipeViewModel.updateCurrentScreen(
+                            RecipeViewModel.CurrentScreen.Home()
+                        )
+                    }) {
+                        Icon(
+                            imageVector = Icons.Filled.Home,
+                            contentDescription = "",
+                            modifier = Modifier.padding(10.dp)
+                        )
+                    }
+                }
             )
         }) {
             Surface(
@@ -162,12 +177,15 @@ fun handleBackButton(
         is RecipeViewModel.CurrentScreen.Category -> onBack(
             RecipeViewModel.CurrentScreen.Category()
         )
+
         is RecipeViewModel.CurrentScreen.Search -> onBack(
             RecipeViewModel.CurrentScreen.Category()
         )
+
         is RecipeViewModel.CurrentScreen.Detail -> onBack(
             RecipeViewModel.CurrentScreen.Search()
         )
+
         is RecipeViewModel.CurrentScreen.Home -> onBack(
             RecipeViewModel.CurrentScreen.Home()
         )
