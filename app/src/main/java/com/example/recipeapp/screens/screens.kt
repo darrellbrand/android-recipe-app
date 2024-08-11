@@ -410,6 +410,7 @@ fun HomeScreen(
         ) {
             Text(text = "Categories", style = MaterialTheme.typography.headlineSmall)
         }
+        Spacer(modifier = Modifier.size(20.dp))
         Button(
             onClick = { onSearchClick() }, modifier = Modifier
                 .fillMaxWidth()
