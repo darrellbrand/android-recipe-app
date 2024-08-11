@@ -3,9 +3,11 @@ package com.example.recipeapp
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavHostController
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 
@@ -36,6 +38,7 @@ class RecipeViewModel : ViewModel() {
     init {
         fetchCategories()
         CurrentScreen.Home().also { _viewState.value.currentScreen = it }
+        fetchRandomMeal()
     }
 
     fun fetchRandomMeal() {
@@ -213,6 +216,35 @@ class RecipeViewModel : ViewModel() {
                     error = e.toString()
                 )
             }
+        }
+    }
+    fun handleBackPress(navController: NavHostController) {
+        val ret = navController.popBackStack()
+        println(ret)
+        navController.currentBackStackEntry?.destination?.route?.let {
+
+            when (it) {
+                CurrentScreen.Category().title -> {
+                   updateCurrentScreen(CurrentScreen.Category())
+                }
+
+                CurrentScreen.Search().title -> {
+                    updateCurrentScreen(CurrentScreen.Search())
+                }
+
+                CurrentScreen.Detail().title -> {
+                    updateCurrentScreen(CurrentScreen.Detail())
+                }
+
+                CurrentScreen.Filter().title -> {
+                   updateCurrentScreen(CurrentScreen.Filter())
+                }
+
+                CurrentScreen.Home().title -> {
+                    updateCurrentScreen(CurrentScreen.Home())
+                }
+            }
+
         }
     }
 

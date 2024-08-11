@@ -57,7 +57,7 @@ fun AppNav(
                 recipeViewModel.updateCurrentScreen(RecipeViewModel.CurrentScreen.Category())
             }, {
                 recipeViewModel.updateCurrentScreen(RecipeViewModel.CurrentScreen.Search())
-            })
+            },meal)
         }
     }
 }
