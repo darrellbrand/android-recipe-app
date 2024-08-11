@@ -376,6 +376,7 @@ fun DetailsScreen(meal: Meal) {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true)
 @Composable
 fun HomeScreen(
@@ -392,16 +393,19 @@ fun HomeScreen(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        AsyncImage(
-            meal.strMealThumb,
-            contentDescription = "null",
-            contentScale = ContentScale.FillBounds,
-            placeholder = painterResource(id = R.drawable.excerpt_lazy_load),
-            modifier = Modifier
-                .size(300.dp)
-                .clip(CircleShape)//.height(200.dp).width(200.dp)
+        Card(onClick = { /*TODO*/ }, colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary), shape = CircleShape,) {
+            AsyncImage(
+                meal.strMealThumb,
+                contentDescription = "null",
+                contentScale = ContentScale.FillBounds,
+                placeholder = painterResource(id = R.drawable.excerpt_lazy_load),
+                modifier = Modifier
+                    .size(300.dp).padding(10.dp)
+                    .clip(CircleShape)//.height(200.dp).width(200.dp)
 
-        )
+            )
+        }
+
         Spacer(modifier = Modifier.size(50.dp))
         Button(
             onClick = { onCategoryClick() }, modifier = Modifier
