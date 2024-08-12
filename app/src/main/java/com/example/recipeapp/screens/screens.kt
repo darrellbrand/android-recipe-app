@@ -410,7 +410,7 @@ fun HomeScreen(
         Button(
             onClick = { onCategoryClick() }, modifier = Modifier
                 .fillMaxWidth()
-                .padding(5.dp)
+                .padding(10.dp)
         ) {
             Text(text = "Categories", style = MaterialTheme.typography.headlineSmall)
         }
@@ -418,7 +418,7 @@ fun HomeScreen(
         Button(
             onClick = { onSearchClick() }, modifier = Modifier
                 .fillMaxWidth()
-                .padding(5.dp)
+                .padding(10.dp)
         ) {
             Text(text = "Search", style = MaterialTheme.typography.headlineSmall)
         }
