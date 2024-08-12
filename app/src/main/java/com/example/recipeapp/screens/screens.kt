@@ -400,7 +400,7 @@ fun HomeScreen(
                 contentScale = ContentScale.FillBounds,
                 placeholder = painterResource(id = R.drawable.excerpt_lazy_load),
                 modifier = Modifier
-                    .size(300.dp).padding(10.dp)
+                    .size(300.dp).padding(5.dp)
                     .clip(CircleShape)//.height(200.dp).width(200.dp)
 
             )
