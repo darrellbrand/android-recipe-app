@@ -111,7 +111,8 @@ fun MainApp(
                     }) {
                         Icon(
                             imageVector = Icons.Filled.ArrowBack,
-                            ""
+                            "",
+                            tint = Color.White
                         )
                     }
                 },
@@ -124,7 +125,8 @@ fun MainApp(
                         Icon(
                             imageVector = Icons.Filled.Home,
                             contentDescription = "",
-                            modifier = Modifier.padding(10.dp)
+                            modifier = Modifier.padding(10.dp),
+                            tint = Color.White
                         )
                     }
                 }
