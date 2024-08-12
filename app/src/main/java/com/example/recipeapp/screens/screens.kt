@@ -199,8 +199,8 @@ fun CategoryItem(category: Category, block: (Category) -> Unit) {
         elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
         modifier = Modifier
             .padding(5.dp)
-            .clickable { block(category) }
-            .clip(RoundedCornerShape(15.dp)),
+            .clickable { block(category) },
+        shape = RoundedCornerShape(15.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
     ) {
         Column(
@@ -214,9 +214,7 @@ fun CategoryItem(category: Category, block: (Category) -> Unit) {
                 contentScale = ContentScale.Crop,
                 placeholder = painterResource(id = R.drawable.excerpt_lazy_load),
                 modifier = Modifier
-                    .padding(2.dp)
-                    .clip(RoundedCornerShape(15.dp))
-            )
+                    .padding(2.dp).clip(RoundedCornerShape(15.dp)))
             Text(
                 text = category.strCategory,
                 textAlign = TextAlign.Center,
