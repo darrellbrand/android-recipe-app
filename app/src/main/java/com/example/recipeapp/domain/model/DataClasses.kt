@@ -1,4 +1,6 @@
-package com.example.recipeapp
+package com.example.recipeapp.domain.model
+
+import com.example.recipeapp.RecipeViewModel
 
 data class ViewState(
     val error: String = "",

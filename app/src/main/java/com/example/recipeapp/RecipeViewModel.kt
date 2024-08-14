@@ -4,10 +4,15 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
+import com.example.recipeapp.data.data_source.recipeService
+import com.example.recipeapp.domain.model.Category
+import com.example.recipeapp.domain.model.CategoryResponse
+import com.example.recipeapp.domain.model.Meal
+import com.example.recipeapp.domain.model.MealResponse
+import com.example.recipeapp.domain.model.ViewState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 
@@ -41,7 +46,7 @@ class RecipeViewModel : ViewModel() {
         fetchRandomMeal()
     }
 
-    fun fetchRandomMeal() {
+    private fun fetchRandomMeal() {
         viewModelScope.launch {
             Log.i("RVM", "fetchRandomMeal")
             try {

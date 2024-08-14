@@ -1,5 +1,7 @@
-package com.example.recipeapp
+package com.example.recipeapp.data.data_source
 
+import com.example.recipeapp.domain.model.CategoryResponse
+import com.example.recipeapp.domain.model.MealResponse
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET

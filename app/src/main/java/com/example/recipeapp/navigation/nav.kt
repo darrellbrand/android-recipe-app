@@ -4,8 +4,8 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.recipeapp.Category
-import com.example.recipeapp.Meal
+import com.example.recipeapp.domain.model.Category
+import com.example.recipeapp.domain.model.Meal
 import com.example.recipeapp.RecipeViewModel
 import com.example.recipeapp.screens.CategoryScreen
 import com.example.recipeapp.screens.DetailsScreen

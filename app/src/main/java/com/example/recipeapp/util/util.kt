@@ -1,5 +1,6 @@
-package com.example.recipeapp
+package com.example.recipeapp.util
 
+import com.example.recipeapp.domain.model.Meal
 import java.lang.StringBuilder
 
 fun getIngredientsString(meal: Meal): String {

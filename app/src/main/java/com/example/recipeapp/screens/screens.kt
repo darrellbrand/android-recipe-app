@@ -5,9 +5,7 @@ import android.annotation.SuppressLint
 import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -46,12 +44,10 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -64,11 +60,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
-import com.example.recipeapp.Category
-import com.example.recipeapp.Meal
+import com.example.recipeapp.domain.model.Category
+import com.example.recipeapp.domain.model.Meal
 import com.example.recipeapp.R
 import com.example.recipeapp.RecipeViewModel
-import com.example.recipeapp.getIngredientsString
+import com.example.recipeapp.util.getIngredientsString
 import com.example.recipeapp.navigation.AppNav
 import com.example.recipeapp.ui.theme.RecipeAppTheme
 
@@ -214,7 +210,9 @@ fun CategoryItem(category: Category, block: (Category) -> Unit) {
                 contentScale = ContentScale.Crop,
                 placeholder = painterResource(id = R.drawable.excerpt_lazy_load),
                 modifier = Modifier
-                    .padding(2.dp).clip(RoundedCornerShape(15.dp)))
+                    .padding(2.dp)
+                    .clip(RoundedCornerShape(15.dp))
+            )
             Text(
                 text = category.strCategory,
                 textAlign = TextAlign.Center,
@@ -393,14 +391,19 @@ fun HomeScreen(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Card(onClick = { /*TODO*/ }, colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary), shape = CircleShape,) {
+        Card(
+            onClick = { /*TODO*/ },
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary),
+            shape = CircleShape,
+        ) {
             AsyncImage(
                 meal.strMealThumb,
                 contentDescription = "null",
                 contentScale = ContentScale.FillBounds,
                 placeholder = painterResource(id = R.drawable.excerpt_lazy_load),
                 modifier = Modifier
-                    .size(300.dp).padding(5.dp)
+                    .size(300.dp)
+                    .padding(5.dp)
                     .clip(CircleShape)//.height(200.dp).width(200.dp)
 
             )
