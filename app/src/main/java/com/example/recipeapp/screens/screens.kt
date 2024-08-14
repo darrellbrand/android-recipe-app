@@ -63,7 +63,7 @@ import coil.compose.AsyncImage
 import com.example.recipeapp.domain.model.Category
 import com.example.recipeapp.domain.model.Meal
 import com.example.recipeapp.R
-import com.example.recipeapp.RecipeViewModel
+import com.example.recipeapp.presentation.RecipeViewModel
 import com.example.recipeapp.util.getIngredientsString
 import com.example.recipeapp.navigation.AppNav
 import com.example.recipeapp.ui.theme.RecipeAppTheme

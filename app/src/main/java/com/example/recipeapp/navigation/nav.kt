@@ -6,7 +6,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.recipeapp.domain.model.Category
 import com.example.recipeapp.domain.model.Meal
-import com.example.recipeapp.RecipeViewModel
+import com.example.recipeapp.presentation.RecipeViewModel
 import com.example.recipeapp.screens.CategoryScreen
 import com.example.recipeapp.screens.DetailsScreen
 import com.example.recipeapp.screens.HomeScreen
