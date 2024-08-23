@@ -176,13 +176,16 @@ fun CategoryScreen(
     categories: List<Category>,
     onClick: (category: Category) -> Unit
 ) {
-    Box(modifier = Modifier.background(MaterialTheme.colorScheme.primary)) {
+    Box(modifier = Modifier) {
         LazyVerticalGrid(
             columns = GridCells.Adaptive(150.dp)
         ) {
+
             items(categories) { category ->
                 CategoryItem(category = category, onClick)
             }
+
+
         }
     }
 }
@@ -194,10 +197,7 @@ fun CategoryItem(category: Category, block: (Category) -> Unit) {
     Card(
         elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
         modifier = Modifier
-            .padding(5.dp)
-            .clickable { block(category) },
-        shape = RoundedCornerShape(15.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
+            .clickable { block(category) }.padding(1.dp)
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -235,11 +235,9 @@ fun SearchList(
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
-            .background(MaterialTheme.colorScheme.primary)
             .fillMaxHeight()
     ) {
         Log.i("screens", "search = $searchString meals= ${list.size} = $list")
-        Spacer(modifier = Modifier.size(10.dp))
         TextField(
             value = searchString,
             label = { Text(text = "Search", style = MaterialTheme.typography.titleMedium) },
@@ -249,8 +247,7 @@ fun SearchList(
                 focusedContainerColor = MaterialTheme.colorScheme.primaryContainer
             ),
             modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(30.dp)),
+                .fillMaxWidth(),
             textStyle = TextStyle(
                 textAlign = TextAlign.Start,
                 fontSize = 20.sp
@@ -262,7 +259,6 @@ fun SearchList(
                 )
             },
         )
-        Spacer(modifier = Modifier.size(10.dp))
         if (list.isNotEmpty() && list.firstOrNull()?.strMeal?.isNotEmpty() == true) {
             println("list " + list.size)
             LazyColumn() {
@@ -280,9 +276,9 @@ fun MealItem(meal: Meal, onClick: (meal: Meal) -> Unit) {
         elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
         modifier = Modifier
             .clickable { onClick(meal) }
-            .padding(2.dp)
-            .clip(RoundedCornerShape(15.dp)),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)) {
+            .padding(1.dp),
+        // .clip(RoundedCornerShape(15.dp)),
+    ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth(),
@@ -326,7 +322,6 @@ fun DetailsScreen(meal: Meal) {
             modifier = Modifier
                 .fillMaxWidth()
                 .align(Alignment.CenterHorizontally),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
         ) {
             Text(
                 text = meal.strMeal ?: "",
