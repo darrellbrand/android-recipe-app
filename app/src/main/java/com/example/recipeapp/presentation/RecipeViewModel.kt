@@ -270,7 +270,7 @@ class RecipeViewModel : ViewModel() {
         val oldRecipe = _meal.value.strInstructions
         val oldRecipeName = _meal.value.strMeal
         val finalPrompt =
-            "$prompt $oldRecipeName $oldRecipe  please format your response cleanly with new lines after each step and list all ingredients in one section at bottom"
+            "$prompt $oldRecipeName $oldRecipe  please format your response  with new lines after each step and list all ingredients in one section at bottom"
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 var res = ""
