@@ -4,7 +4,7 @@ import com.example.recipeapp.domain.model.Meal
 import java.lang.StringBuilder
 
 fun getIngredientsString(meal: Meal): String {
-
+    if (meal.strIngredient1 == null) return ""
     val map = HashMap<String, String>()
 
     map[meal.strIngredient1 ?: ""] = meal.strMeasure1 ?: ""
@@ -34,7 +34,7 @@ fun getIngredientsString(meal: Meal): String {
         builder.append(" $t : $u \n")
     }
 
-    return  "\n" + builder.toString()
+    return "\n" + builder.toString()
 
 
 }

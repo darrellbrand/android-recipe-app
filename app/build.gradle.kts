@@ -1,6 +1,7 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
 }
 
 android {
@@ -38,6 +39,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.1"
@@ -51,7 +53,8 @@ android {
 
 dependencies {
 
-  val nav_version = "2.7.7"
+  implementation("com.google.ai.client.generativeai:generativeai:0.9.0")
+    val nav_version = "2.7.7"
     val lifecycle_version = "2.7.0"
     implementation ("androidx.lifecycle:lifecycle-runtime-compose:$lifecycle_version")
     implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycle_version")

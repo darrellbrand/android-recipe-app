@@ -4,6 +4,7 @@ package com.example.recipeapp.screens
 import android.annotation.SuppressLint
 import android.util.Log
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -28,6 +30,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -90,15 +93,14 @@ fun MainApp(
     }
     RecipeAppTheme {
         Scaffold(topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = title,
-                        style = MaterialTheme.typography.headlineLarge,
-                        color = MaterialTheme.colorScheme.onPrimary
-                    )
+            TopAppBar(title = {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.headlineLarge,
+                    color = MaterialTheme.colorScheme.onPrimary
+                )
 
-                },
+            },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.primary),
                 navigationIcon = {
                     IconButton(onClick = {
@@ -106,9 +108,7 @@ fun MainApp(
 
                     }) {
                         Icon(
-                            imageVector = Icons.Filled.ArrowBack,
-                            "",
-                            tint = Color.White
+                            imageVector = Icons.Filled.ArrowBack, "", tint = Color.White
                         )
                     }
                 },
@@ -125,8 +125,7 @@ fun MainApp(
                             tint = Color.White
                         )
                     }
-                }
-            )
+                })
         }) { values ->
             Surface(
                 modifier = Modifier.padding(values),
@@ -173,8 +172,7 @@ fun MainApp(
 
 @Composable
 fun CategoryScreen(
-    categories: List<Category>,
-    onClick: (category: Category) -> Unit
+    categories: List<Category>, onClick: (category: Category) -> Unit
 ) {
     Box(modifier = Modifier) {
         LazyVerticalGrid(
@@ -194,11 +192,10 @@ fun CategoryScreen(
 @Composable
 fun CategoryItem(category: Category, block: (Category) -> Unit) {
 
-    Card(
-        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
+    Card(elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
         modifier = Modifier
-            .clickable { block(category) }.padding(1.dp)
-    ) {
+            .clickable { block(category) }
+            .padding(1.dp)) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
@@ -233,9 +230,7 @@ fun SearchList(
 ) {
 
     Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .fillMaxHeight()
+        horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxHeight()
     ) {
         Log.i("screens", "search = $searchString meals= ${list.size} = $list")
         TextField(
@@ -246,16 +241,13 @@ fun SearchList(
                 unfocusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
                 focusedContainerColor = MaterialTheme.colorScheme.primaryContainer
             ),
-            modifier = Modifier
-                .fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
             textStyle = TextStyle(
-                textAlign = TextAlign.Start,
-                fontSize = 20.sp
+                textAlign = TextAlign.Start, fontSize = 20.sp
             ),
             leadingIcon = {
                 Icon(
-                    imageVector = Icons.Default.Search,
-                    contentDescription = null
+                    imageVector = Icons.Default.Search, contentDescription = null
                 )
             },
         )
@@ -297,8 +289,7 @@ fun MealItem(meal: Meal, onClick: (meal: Meal) -> Unit) {
             meal.strMeal?.let {
                 Text(
                     text = it,
-                    modifier = Modifier
-                        .padding(5.dp),
+                    modifier = Modifier.padding(5.dp),
                     style = MaterialTheme.typography.headlineSmall,
                     textAlign = TextAlign.Center
 
@@ -311,7 +302,7 @@ fun MealItem(meal: Meal, onClick: (meal: Meal) -> Unit) {
 
 
 @Composable
-fun DetailsScreen(meal: Meal) {
+fun DetailsScreen(meal: Meal, onClick: () -> Unit) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.verticalScroll(
             rememberScrollState()
@@ -347,6 +338,13 @@ fun DetailsScreen(meal: Meal) {
                     placeholder = painterResource(id = R.drawable.excerpt_lazy_load),
                 )
             }
+
+            Button(
+                onClick = { onClick() }, modifier = Modifier.align(Alignment.CenterHorizontally).padding(10.dp)
+            ) {
+                Text(text = "AI Generate   ", style = MaterialTheme.typography.titleLarge)
+                Icon(imageVector = Icons.Default.Refresh, contentDescription = "")
+            }
             Text(
                 text = "Instructions",
                 style = MaterialTheme.typography.headlineSmall,
@@ -373,9 +371,7 @@ fun DetailsScreen(meal: Meal) {
 @Preview(showBackground = true)
 @Composable
 fun HomeScreen(
-    onCategoryClick: () -> Unit = {},
-    onSearchClick: () -> Unit = {},
-    meal: Meal = Meal()
+    onCategoryClick: () -> Unit = {}, onSearchClick: () -> Unit = {}, meal: Meal = Meal()
 ) {
     Column(
         modifier = Modifier

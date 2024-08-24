@@ -4,19 +4,29 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
+import com.example.recipeapp.BuildConfig
 import com.example.recipeapp.data.data_source.recipeService
 import com.example.recipeapp.domain.model.Category
 import com.example.recipeapp.domain.model.CategoryResponse
 import com.example.recipeapp.domain.model.Meal
 import com.example.recipeapp.domain.model.MealResponse
 import com.example.recipeapp.domain.model.ViewState
+
+import com.google.ai.client.generativeai.GenerativeModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
 class RecipeViewModel : ViewModel() {
+
+    private val generativeModel = GenerativeModel(
+        modelName = "gemini-1.5-flash",
+        apiKey = BuildConfig.apiKey
+    )
 
     private val _viewState = MutableStateFlow(ViewState())
     val viewState = _viewState.asStateFlow()
@@ -223,6 +233,7 @@ class RecipeViewModel : ViewModel() {
             }
         }
     }
+
     fun handleBackPress(navController: NavHostController) {
         val ret = navController.popBackStack()
         println(ret)
@@ -230,7 +241,7 @@ class RecipeViewModel : ViewModel() {
 
             when (it) {
                 CurrentScreen.Category().title -> {
-                   updateCurrentScreen(CurrentScreen.Category())
+                    updateCurrentScreen(CurrentScreen.Category())
                 }
 
                 CurrentScreen.Search().title -> {
@@ -242,7 +253,7 @@ class RecipeViewModel : ViewModel() {
                 }
 
                 CurrentScreen.Filter().title -> {
-                   updateCurrentScreen(CurrentScreen.Filter())
+                    updateCurrentScreen(CurrentScreen.Filter())
                 }
 
                 CurrentScreen.Home().title -> {
@@ -251,6 +262,28 @@ class RecipeViewModel : ViewModel() {
             }
 
         }
+    }
+
+    fun generateRecipe() {
+        val prompt =
+            "please create a simpler recipe that is an improvement on these instructions for "
+        val oldRecipe = _meal.value.strInstructions
+        val oldRecipeName = _meal.value.strMeal
+        val finalPrompt =
+            "$prompt $oldRecipeName $oldRecipe  please format your response cleanly with new lines and list all ingredients in one section at bottom"
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                var res = ""
+                //
+                generativeModel.generateContentStream(finalPrompt)
+                    .collect { response ->
+                        res += response.text
+                        _meal.value = _meal.value.copy(strInstructions = res)
+                    }
+                _meal.value = _meal.value.copy(strIngredient1 = null)
+            }
+        }
+
     }
 
     enum class Screens { CATEGORY, SEARCH, DETAIL, HOME, FILTER }

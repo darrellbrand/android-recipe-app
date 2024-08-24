@@ -27,7 +27,7 @@ data class Meal(
     val idMeal: String? = null,
     val strMealThumb: String? = null,
     val strMeal: String? = null,
-    val strInstructions: String? = null,
+    var strInstructions: String? = null,
     val strIngredient1: String? = null,
     val strIngredient2: String? = null,
     val strIngredient3: String? = null,
