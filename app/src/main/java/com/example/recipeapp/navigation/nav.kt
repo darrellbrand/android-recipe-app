@@ -34,7 +34,7 @@ fun AppNav(
 
         }
         composable(RecipeViewModel.CurrentScreen.Detail().title) {
-            DetailsScreen(meal = meal,recipeViewModel::generateRecipe)
+            DetailsScreen(meal = meal,recipeViewModel::generateOpenAiRecipe)
         }
         composable(RecipeViewModel.CurrentScreen.Search().title) {
             SearchList(

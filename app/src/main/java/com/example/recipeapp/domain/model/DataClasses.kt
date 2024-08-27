@@ -10,6 +10,12 @@ data class ViewState(
 data class MealResponse(
     val meals: List<Meal>? = null
 )
+data class ApiKeyResponse(
+    val apiKey: String? = null
+)
+data class OpenAiResponse(
+    val generate: String? = null
+)
 
 data class Category(
     val idCategory: String = "",

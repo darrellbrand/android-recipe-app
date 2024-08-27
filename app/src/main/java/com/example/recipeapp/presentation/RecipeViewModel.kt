@@ -1,10 +1,12 @@
 package com.example.recipeapp.presentation
 
+import android.provider.Settings
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import com.example.recipeapp.BuildConfig
+import com.example.recipeapp.data.data_source.openAiService
 import com.example.recipeapp.data.data_source.recipeService
 import com.example.recipeapp.domain.model.Category
 import com.example.recipeapp.domain.model.CategoryResponse
@@ -27,6 +29,8 @@ class RecipeViewModel : ViewModel() {
         modelName = "gemini-1.5-flash",
         apiKey = BuildConfig.apiKey
     )
+    private val androidId = Settings.Secure.ANDROID_ID
+    private var apiKey = "";
 
     private val _viewState = MutableStateFlow(ViewState())
     val viewState = _viewState.asStateFlow()
@@ -51,9 +55,26 @@ class RecipeViewModel : ViewModel() {
 
 
     init {
+        getApiKey()
         fetchCategories()
-        CurrentScreen.Home().also { _viewState.value.currentScreen = it }
+        CurrentScreen.Home().let { _viewState.value.currentScreen = it }
         fetchRandomMeal()
+
+    }
+
+    private fun getApiKey() {
+        viewModelScope.launch {
+            Log.i("RVM", "getApiKey")
+            try {
+                val res = openAiService?.getApiKey(androidId)
+                apiKey = res?.apiKey.toString()
+            } catch (e: Exception) {
+                _viewState.value = _viewState.value.copy(
+                    error = e.toString()
+                )
+                Log.i("RVM", e.stackTraceToString())
+            }
+        }
     }
 
     private fun fetchRandomMeal() {
@@ -280,7 +301,34 @@ class RecipeViewModel : ViewModel() {
                         res += response.text
                         _meal.value = _meal.value.copy(strInstructions = res)
                     }
-                _meal.value = _meal.value.copy(strIngredient1 = null)
+            }
+        }
+
+    }
+
+    fun generateOpenAiRecipe() {
+        Log.i("RVM","generateOpenAiRecipe")
+        val prompt =
+            "please create a simpler recipe that is an improvement on these instructions for "
+        val oldRecipe = _meal.value.strInstructions
+        val oldRecipeName = _meal.value.strMeal
+        val finalPrompt =
+            "$prompt $oldRecipeName $oldRecipe  please format your response  with new lines after each step and list all ingredients in one section at bottom"
+        viewModelScope.launch {
+            try {
+                val res = openAiService?.getOpenAIRecipe(
+                    androidId = androidId,
+                    apiKey = apiKey,
+                    message = finalPrompt
+                )
+                Log.i("RVM" , " $res")
+                _meal.value = _meal.value.copy(strInstructions = res?.generate)
+            }
+            catch (e : Exception)
+            {
+                 _viewState.value = _viewState.value.copy(
+                    error = e.toString()
+                )
             }
         }
 
