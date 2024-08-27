@@ -13,6 +13,7 @@ import com.example.recipeapp.domain.model.CategoryResponse
 import com.example.recipeapp.domain.model.Meal
 import com.example.recipeapp.domain.model.MealResponse
 import com.example.recipeapp.domain.model.ViewState
+import com.example.recipeapp.util.getIngredientsString
 
 import com.google.ai.client.generativeai.GenerativeModel
 import kotlinx.coroutines.Dispatchers
@@ -291,7 +292,7 @@ class RecipeViewModel : ViewModel() {
         val oldRecipe = _meal.value.strInstructions
         val oldRecipeName = _meal.value.strMeal
         val finalPrompt =
-            "$prompt $oldRecipeName $oldRecipe  please format your response  with new lines after each step and list all ingredients in one section at bottom"
+            "$prompt $oldRecipeName $oldRecipe  please format your response  with new lines after each step and list all ingredients after instructions "
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 var res = ""
@@ -301,19 +302,23 @@ class RecipeViewModel : ViewModel() {
                         res += response.text
                         _meal.value = _meal.value.copy(strInstructions = res)
                     }
+                _meal.value = _meal.value.copy(strIngredient1 = null)
             }
         }
 
     }
 
     fun generateOpenAiRecipe() {
-        Log.i("RVM","generateOpenAiRecipe")
+        Log.i("RVM", "generateOpenAiRecipe")
         val prompt =
             "please create a simpler recipe that is an improvement on these instructions for "
-        val oldRecipe = _meal.value.strInstructions
+        val oldRecipe =
+            _meal.value.strInstructions + " using these ingredients. " + getIngredientsString(_meal.value)
         val oldRecipeName = _meal.value.strMeal
         val finalPrompt =
-            "$prompt $oldRecipeName $oldRecipe  please format your response  with new lines after each step and list all ingredients in one section at bottom"
+            "$prompt $oldRecipeName $oldRecipe  please format your response " +
+                    " with new lines after each step and list all ingredients at " +
+                    "end of recipe and not at beginning"
         viewModelScope.launch {
             try {
                 val res = openAiService?.getOpenAIRecipe(
@@ -321,12 +326,11 @@ class RecipeViewModel : ViewModel() {
                     apiKey = apiKey,
                     message = finalPrompt
                 )
-                Log.i("RVM" , " $res")
-                _meal.value = _meal.value.copy(strInstructions = res?.generate)
-            }
-            catch (e : Exception)
-            {
-                 _viewState.value = _viewState.value.copy(
+                Log.i("RVM", " $res")
+                _meal.value =
+                    _meal.value.copy(strInstructions = res?.generate, strIngredient1 = null)
+            } catch (e: Exception) {
+                _viewState.value = _viewState.value.copy(
                     error = e.toString()
                 )
             }
