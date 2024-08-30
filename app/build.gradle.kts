@@ -1,7 +1,8 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
-    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
+    id("kotlin-kapt")
+    id("com.google.dagger.hilt.android")
 }
 
 android {
@@ -52,7 +53,9 @@ android {
 }
 
 dependencies {
-
+//hilt
+    implementation("com.google.dagger:hilt-android:2.49")
+    kapt("com.google.dagger:hilt-android-compiler:2.49")
     implementation("com.google.ai.client.generativeai:generativeai:0.9.0")
     val nav_version = "2.7.7"
     val lifecycle_version = "2.8.4"
@@ -90,3 +93,6 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:$nav_version")
 }
 
+kapt {
+    correctErrorTypes = true
+}
