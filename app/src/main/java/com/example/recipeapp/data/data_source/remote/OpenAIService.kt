@@ -1,10 +1,7 @@
-package com.example.recipeapp.data.data_source
+package com.example.recipeapp.data.data_source.remote
 
-import android.os.Build
 import com.example.recipeapp.BuildConfig
 import com.example.recipeapp.domain.model.ApiKeyResponse
-import com.example.recipeapp.domain.model.CategoryResponse
-import com.example.recipeapp.domain.model.MealResponse
 import com.example.recipeapp.domain.model.OpenAiResponse
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory

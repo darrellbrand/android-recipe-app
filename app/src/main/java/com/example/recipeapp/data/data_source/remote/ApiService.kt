@@ -1,4 +1,4 @@
-package com.example.recipeapp.data.data_source
+package com.example.recipeapp.data.data_source.remote
 
 import com.example.recipeapp.domain.model.CategoryResponse
 import com.example.recipeapp.domain.model.MealResponse

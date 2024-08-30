@@ -5,7 +5,7 @@ import java.lang.StringBuilder
 
 fun getIngredientsString(meal: Meal): String {
     if (meal.strIngredient1 == null) return ""
-    val map = HashMap<String, String>()
+    val map = hashMapOf<String, String>()
 
     map[meal.strIngredient1 ?: ""] = meal.strMeasure1 ?: ""
     map[meal.strIngredient2 ?: ""] = meal.strMeasure2 ?: ""

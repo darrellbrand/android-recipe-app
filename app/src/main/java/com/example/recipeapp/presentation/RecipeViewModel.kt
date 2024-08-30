@@ -6,25 +6,28 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import com.example.recipeapp.BuildConfig
-import com.example.recipeapp.data.data_source.openAiService
-import com.example.recipeapp.data.data_source.recipeService
+import com.example.recipeapp.data.data_source.remote.openAiService
+import com.example.recipeapp.data.data_source.remote.recipeService
 import com.example.recipeapp.domain.model.Category
 import com.example.recipeapp.domain.model.CategoryResponse
 import com.example.recipeapp.domain.model.Meal
 import com.example.recipeapp.domain.model.MealResponse
 import com.example.recipeapp.domain.model.ViewState
+import com.example.recipeapp.repository.RecipeRepository
 import com.example.recipeapp.util.getIngredientsString
 
 import com.google.ai.client.generativeai.GenerativeModel
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-
-class RecipeViewModel : ViewModel() {
+@HiltViewModel
+class RecipeViewModel @Inject constructor(recipeRepository: RecipeRepository): ViewModel() {
 
     private val generativeModel = GenerativeModel(
         modelName = "gemini-1.5-flash",
