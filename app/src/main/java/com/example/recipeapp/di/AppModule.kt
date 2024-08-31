@@ -40,7 +40,7 @@ object RetrofitModule {
 
     @Provides
     @Singleton
-    fun provideRecipeApiApiService(@Named("RecipeRetrofit") retrofit: Retrofit): ApiService {
+    fun provideRecipeApiService(@Named("RecipeRetrofit") retrofit: Retrofit): ApiService {
         return retrofit.create(ApiService::class.java)
     }
 
@@ -52,7 +52,10 @@ object RetrofitModule {
 
     @Provides
     @Singleton
-    fun provideRecipeRepository(@Named("AIRetrofit") retrofitAI: Retrofit, @Named("RecipeRetrofit") retrofitRecipe: Retrofit ) : RecipeRepository{
+    fun provideRecipeRepository(
+        retrofitAI: OpenAiService,
+        retrofitRecipe: ApiService
+    ): RecipeRepository {
         return RecipeRepositoryImpl(openAiService = retrofitAI, apiService = retrofitRecipe)
     }
 }

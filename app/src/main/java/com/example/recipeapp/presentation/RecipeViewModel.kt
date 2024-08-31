@@ -6,8 +6,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import com.example.recipeapp.BuildConfig
-import com.example.recipeapp.data.data_source.remote.openAiService
-import com.example.recipeapp.data.data_source.remote.recipeService
 import com.example.recipeapp.domain.model.Category
 import com.example.recipeapp.domain.model.CategoryResponse
 import com.example.recipeapp.domain.model.Meal
@@ -15,19 +13,17 @@ import com.example.recipeapp.domain.model.MealResponse
 import com.example.recipeapp.domain.model.ViewState
 import com.example.recipeapp.repository.RecipeRepository
 import com.example.recipeapp.util.getIngredientsString
-
 import com.google.ai.client.generativeai.GenerativeModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
-class RecipeViewModel @Inject constructor(recipeRepository: RecipeRepository) : ViewModel() {
+class RecipeViewModel @Inject constructor(private val recipeRepository: RecipeRepository) :
+    ViewModel() {
 
     private val generativeModel = GenerativeModel(
         modelName = "gemini-1.5-flash",
@@ -99,8 +95,8 @@ class RecipeViewModel @Inject constructor(recipeRepository: RecipeRepository) : 
         viewModelScope.launch {
             Log.i("RVM", "getApiKey")
             try {
-                val res = openAiService?.getApiKey(androidId)
-                apiKey = res?.apiKey.toString()
+                val res = recipeRepository.getApiKey(androidId)
+                apiKey = res.apiKey.toString()
             } catch (e: Exception) {
                 _viewState.value = _viewState.value.copy(
                     error = e.toString()
@@ -114,8 +110,8 @@ class RecipeViewModel @Inject constructor(recipeRepository: RecipeRepository) : 
         viewModelScope.launch {
             Log.i("RVM", "fetchRandomMeal")
             try {
-                val response: MealResponse? = recipeService?.getRandomMeal()
-                val meal: Meal? = response?.meals?.firstOrNull()
+                val response: MealResponse = recipeRepository.getRandomMeal()
+                val meal: Meal? = response.meals?.firstOrNull()
                 _viewState.value = _viewState.value.copy(
                     error = "",
                 )
@@ -132,7 +128,7 @@ class RecipeViewModel @Inject constructor(recipeRepository: RecipeRepository) : 
         viewModelScope.launch {
             Log.i("RVM", "fetchDetailMeals")
             try {
-                val response: MealResponse? = meal.idMeal?.let { recipeService?.getDetailMeal(it) }
+                val response: MealResponse = meal.idMeal.let { recipeRepository.getDetailMeal(it) }
                 _meal.value = response?.meals?.firstOrNull() ?: Meal()
                 _viewState.value = _viewState.value.copy(
                     error = "",
@@ -149,11 +145,11 @@ class RecipeViewModel @Inject constructor(recipeRepository: RecipeRepository) : 
         viewModelScope.launch {
             Log.i("RVM", "fetchCategory")
             try {
-                val response: CategoryResponse? = recipeService?.getCategories()
+                val response: CategoryResponse = recipeRepository.getCategories()
                 _viewState.value = _viewState.value.copy(
                     error = "",
                 )
-                response?.let { _categories.value = it.categories }
+                response.let { _categories.value = it.categories }
 
 
             } catch (e: Exception) {
@@ -168,11 +164,11 @@ class RecipeViewModel @Inject constructor(recipeRepository: RecipeRepository) : 
         viewModelScope.launch {
             Log.i("RVM", "fetchSearchMeals")
             try {
-                val response: MealResponse? = recipeService?.getSearchMeals(searchString.value)
+                val response: MealResponse = recipeRepository.getSearchMeals(searchString.value)
                 _viewState.value = _viewState.value.copy(
                     error = "",
                 )
-                response?.let { _meals.value = it.meals ?: listOf(Meal()) }
+                response.let { _meals.value = it.meals ?: listOf(Meal()) }
             } catch (e: Exception) {
                 _viewState.value = _viewState.value.copy(
                     error = e.toString()
@@ -214,7 +210,7 @@ class RecipeViewModel @Inject constructor(recipeRepository: RecipeRepository) : 
     /**
      * callbacks for ui  will be processed as events ///////////////////////////////////////////////////////////////////////////////////////////////
      */
- private   fun updateCurrentScreen(screen: CurrentScreen) {
+    private fun updateCurrentScreen(screen: CurrentScreen) {
         Log.i("RVM", "updateCurrentScreen " + screen.title)
         viewModelScope.launch {
             try {
@@ -228,7 +224,7 @@ class RecipeViewModel @Inject constructor(recipeRepository: RecipeRepository) : 
         }
     }
 
-private    fun onValueChanged(search: String) {
+    private fun onValueChanged(search: String) {
         Log.i("RVM", "onValueChanged")
         viewModelScope.launch {
             try {
@@ -251,13 +247,13 @@ private    fun onValueChanged(search: String) {
         }
     }
 
-private    fun loadListFromCategory(category: Category) {
+    private fun loadListFromCategory(category: Category) {
         viewModelScope.launch {
             Log.i("RVM", "loadListFromCategory " + category.strCategory)
             try {
-                val response: MealResponse? =
-                    recipeService?.getSearchCategoryMeals(category.strCategory)
-                response?.let { _meals.value = it.meals ?: listOf(Meal()) }
+                val response: MealResponse =
+                    recipeRepository.getSearchCategoryMeals(category.strCategory)
+                response.let { _meals.value = it.meals ?: listOf(Meal()) }
                 updateCurrentScreen(CurrentScreen.Filter())
                 _viewState.value = _viewState.value.copy(
                     error = "",
@@ -270,7 +266,7 @@ private    fun loadListFromCategory(category: Category) {
         }
     }
 
-private    fun loadDetailFromMeal(meal: Meal) {
+    private fun loadDetailFromMeal(meal: Meal) {
         Log.i("RVM", "loadDetailsFromMeal")
         viewModelScope.launch {
             try {
@@ -288,7 +284,7 @@ private    fun loadDetailFromMeal(meal: Meal) {
     }
 
 
-   private fun handleBackPress(navController: NavHostController) {
+    private fun handleBackPress(navController: NavHostController) {
         val ret = navController.popBackStack()
         println(ret)
         navController.currentBackStackEntry?.destination?.route?.let {
@@ -356,14 +352,14 @@ private    fun loadDetailFromMeal(meal: Meal) {
                     "end of recipe and not at beginning"
         viewModelScope.launch {
             try {
-                val res = openAiService?.getOpenAIRecipe(
+                val res = recipeRepository.getOpenAIRecipe(
                     androidId = androidId,
                     apiKey = apiKey,
                     message = finalPrompt
                 )
                 Log.i("RVM", " $res")
                 _meal.value =
-                    _meal.value.copy(strInstructions = res?.generate, strIngredient1 = null)
+                    _meal.value.copy(strInstructions = res.generate, strIngredient1 = null)
             } catch (e: Exception) {
                 _viewState.value = _viewState.value.copy(
                     error = e.toString()
