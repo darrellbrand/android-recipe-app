@@ -4,7 +4,6 @@ package com.example.recipeapp.screens
 import android.annotation.SuppressLint
 import android.util.Log
 import androidx.activity.compose.BackHandler
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -15,7 +14,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -29,7 +27,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
@@ -70,7 +67,9 @@ import com.example.recipeapp.R
 import com.example.recipeapp.presentation.RecipeViewModel
 import com.example.recipeapp.util.getIngredientsString
 import com.example.recipeapp.navigation.AppNav
+import com.example.recipeapp.presentation.AppEvent
 import com.example.recipeapp.ui.theme.RecipeAppTheme
+import kotlin.reflect.KFunction1
 
 
 @SuppressLint("UnusedContentLambdaTargetStateParameter")
@@ -105,18 +104,22 @@ fun MainApp(
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.primary),
                 navigationIcon = {
                     IconButton(onClick = {
-                        recipeViewModel.handleBackPress(navController)
+                        recipeViewModel.processEvent(AppEvent.HandleBackPressEvent(navController))
 
                     }) {
                         Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack, "", tint = Color.White
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            "",
+                            tint = Color.White
                         )
                     }
                 },
                 actions = {
                     IconButton(onClick = {
-                        recipeViewModel.updateCurrentScreen(
-                            RecipeViewModel.CurrentScreen.Home()
+                        recipeViewModel.processEvent(
+                            AppEvent.UpdateCurrentScreenEvent(
+                                RecipeViewModel.CurrentScreen.Home()
+                            )
                         )
                     }) {
                         Icon(
@@ -140,7 +143,7 @@ fun MainApp(
                     categories = categories
                 )
                 BackHandler(enabled = true) {
-                    recipeViewModel.handleBackPress(navController)
+                    recipeViewModel.processEvent(AppEvent.HandleBackPressEvent(navController))
                 }
                 when (viewState.currentScreen) {
                     is RecipeViewModel.CurrentScreen.Category -> navController.navigate(
@@ -173,7 +176,7 @@ fun MainApp(
 
 @Composable
 fun CategoryScreen(
-    categories: List<Category>, onClick: (category: Category) -> Unit
+    categories: List<Category>, onClick: KFunction1<AppEvent, Unit>
 ) {
     Box(modifier = Modifier) {
         LazyVerticalGrid(
@@ -181,10 +184,10 @@ fun CategoryScreen(
         ) {
 
             items(categories) { category ->
-                CategoryItem(category = category, onClick)
+                CategoryItem(category = category) {
+                    onClick(AppEvent.LoadListFromCategoryEvent(category))
+                }
             }
-
-
         }
     }
 }
@@ -226,8 +229,7 @@ fun CategoryItem(category: Category, block: (Category) -> Unit) {
 fun SearchList(
     list: List<Meal>,
     searchString: String,
-    onValueChanged: (String) -> Unit,
-    onClick: (meal: Meal) -> Unit
+    onClick: KFunction1<AppEvent, Unit>
 ) {
 
     Column(
@@ -237,7 +239,11 @@ fun SearchList(
         TextField(
             value = searchString,
             label = { Text(text = "Search", style = MaterialTheme.typography.titleMedium) },
-            onValueChange = onValueChanged,
+            onValueChange = {
+                onClick(
+                    AppEvent.OnValueChangedEvent(it)
+                )
+            },
             colors = TextFieldDefaults.colors(
                 unfocusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
                 focusedContainerColor = MaterialTheme.colorScheme.primaryContainer
@@ -256,7 +262,7 @@ fun SearchList(
             println("list " + list.size)
             LazyColumn() {
                 items(list) { meal ->
-                    MealItem(meal = meal, onClick)
+                    MealItem(meal = meal) { onClick(AppEvent.LoadDetailFromMealEvent(meal)) }
                 }
             }
         }
@@ -303,7 +309,7 @@ fun MealItem(meal: Meal, onClick: (meal: Meal) -> Unit) {
 
 
 @Composable
-fun DetailsScreen(meal: Meal, onClick: () -> Unit) {
+fun DetailsScreen(meal: Meal, onClick: KFunction1<AppEvent, Unit>) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.verticalScroll(
             rememberScrollState()
@@ -341,7 +347,10 @@ fun DetailsScreen(meal: Meal, onClick: () -> Unit) {
             }
 
             Button(
-                onClick = { onClick() }, modifier = Modifier.align(Alignment.CenterHorizontally).padding(10.dp)
+                onClick = { onClick(AppEvent.GenerateOpenAIRecipeEvent) },
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .padding(10.dp)
             ) {
                 Text(text = "AI Generate   ", style = MaterialTheme.typography.titleLarge)
                 Icon(imageVector = Icons.Default.Refresh, contentDescription = "")
@@ -369,10 +378,10 @@ fun DetailsScreen(meal: Meal, onClick: () -> Unit) {
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview(showBackground = true)
 @Composable
 fun HomeScreen(
-    onCategoryClick: () -> Unit = {}, onSearchClick: () -> Unit = {}, meal: Meal = Meal()
+    onClick: KFunction1<AppEvent, Unit> ,
+    meal: Meal = Meal()
 ) {
     Column(
         modifier = Modifier
@@ -403,7 +412,7 @@ fun HomeScreen(
 
         Spacer(modifier = Modifier.size(50.dp))
         Button(
-            onClick = { onCategoryClick() }, modifier = Modifier
+            onClick = { onClick(AppEvent.UpdateCurrentScreenEvent(RecipeViewModel.CurrentScreen.Category())) }, modifier = Modifier
                 .fillMaxWidth()
                 .padding(10.dp)
         ) {
@@ -411,7 +420,7 @@ fun HomeScreen(
         }
         Spacer(modifier = Modifier.size(20.dp))
         Button(
-            onClick = { onSearchClick() }, modifier = Modifier
+            onClick = { onClick(AppEvent.UpdateCurrentScreenEvent(RecipeViewModel.CurrentScreen.Search())) }, modifier = Modifier
                 .fillMaxWidth()
                 .padding(10.dp)
         ) {

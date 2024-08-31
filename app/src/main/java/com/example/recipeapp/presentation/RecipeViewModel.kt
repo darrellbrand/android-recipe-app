@@ -27,7 +27,7 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
-class RecipeViewModel @Inject constructor(recipeRepository: RecipeRepository): ViewModel() {
+class RecipeViewModel @Inject constructor(recipeRepository: RecipeRepository) : ViewModel() {
 
     private val generativeModel = GenerativeModel(
         modelName = "gemini-1.5-flash",
@@ -63,6 +63,35 @@ class RecipeViewModel @Inject constructor(recipeRepository: RecipeRepository): V
         fetchCategories()
         CurrentScreen.Home().let { _viewState.value.currentScreen = it }
         fetchRandomMeal()
+
+    }
+
+    fun processEvent(event: AppEvent) {
+        when (event) {
+            AppEvent.GenerateOpenAIRecipeEvent -> {
+                generateOpenAiRecipe()
+            }
+
+            is AppEvent.HandleBackPressEvent -> {
+                handleBackPress(event.navController)
+            }
+
+            is AppEvent.LoadDetailFromMealEvent -> {
+                loadDetailFromMeal(event.meal)
+            }
+
+            is AppEvent.LoadListFromCategoryEvent -> {
+                loadListFromCategory(event.category)
+            }
+
+            is AppEvent.OnValueChangedEvent -> {
+                onValueChanged(event.search)
+            }
+
+            is AppEvent.UpdateCurrentScreenEvent -> {
+                updateCurrentScreen(event.screen)
+            }
+        }
 
     }
 
@@ -152,19 +181,6 @@ class RecipeViewModel @Inject constructor(recipeRepository: RecipeRepository): V
         }
     }
 
-    fun updateCurrentScreen(screen: CurrentScreen) {
-        Log.i("RVM", "updateCurrentScreen " + screen.title)
-        viewModelScope.launch {
-            try {
-                clearSearchIfNeeded(screen)
-                _viewState.value = _viewState.value.copy(currentScreen = screen)
-            } catch (e: Exception) {
-                _viewState.value = _viewState.value.copy(
-                    error = e.toString()
-                )
-            }
-        }
-    }
 
     private fun clearSearchIfNeeded(screen: CurrentScreen) {
         _searchString.value = when (screen) {
@@ -182,12 +198,37 @@ class RecipeViewModel @Inject constructor(recipeRepository: RecipeRepository): V
         }
     }
 
+    private fun clearList() {
+        Log.i("RVM", "clearList")
+        viewModelScope.launch {
+            try {
+                _meals.value = listOf(Meal())
+            } catch (e: Exception) {
+                _viewState.value = _viewState.value.copy(
+                    error = e.toString()
+                )
+            }
+        }
+    }
+
     /**
-     * callbacks for ui ///////////////////////////////////////////////////////////////////////////////////////////////
+     * callbacks for ui  will be processed as events ///////////////////////////////////////////////////////////////////////////////////////////////
      */
+ private   fun updateCurrentScreen(screen: CurrentScreen) {
+        Log.i("RVM", "updateCurrentScreen " + screen.title)
+        viewModelScope.launch {
+            try {
+                clearSearchIfNeeded(screen)
+                _viewState.value = _viewState.value.copy(currentScreen = screen)
+            } catch (e: Exception) {
+                _viewState.value = _viewState.value.copy(
+                    error = e.toString()
+                )
+            }
+        }
+    }
 
-
-    fun onValueChanged(search: String) {
+private    fun onValueChanged(search: String) {
         Log.i("RVM", "onValueChanged")
         viewModelScope.launch {
             try {
@@ -210,7 +251,7 @@ class RecipeViewModel @Inject constructor(recipeRepository: RecipeRepository): V
         }
     }
 
-    fun loadListFromCategory(category: Category) {
+private    fun loadListFromCategory(category: Category) {
         viewModelScope.launch {
             Log.i("RVM", "loadListFromCategory " + category.strCategory)
             try {
@@ -229,7 +270,7 @@ class RecipeViewModel @Inject constructor(recipeRepository: RecipeRepository): V
         }
     }
 
-    fun loadDetailFromMeal(meal: Meal) {
+private    fun loadDetailFromMeal(meal: Meal) {
         Log.i("RVM", "loadDetailsFromMeal")
         viewModelScope.launch {
             try {
@@ -246,20 +287,8 @@ class RecipeViewModel @Inject constructor(recipeRepository: RecipeRepository): V
         }
     }
 
-    fun clearList() {
-        Log.i("RVM", "clearList")
-        viewModelScope.launch {
-            try {
-                _meals.value = listOf(Meal())
-            } catch (e: Exception) {
-                _viewState.value = _viewState.value.copy(
-                    error = e.toString()
-                )
-            }
-        }
-    }
 
-    fun handleBackPress(navController: NavHostController) {
+   private fun handleBackPress(navController: NavHostController) {
         val ret = navController.popBackStack()
         println(ret)
         navController.currentBackStackEntry?.destination?.route?.let {
@@ -289,29 +318,32 @@ class RecipeViewModel @Inject constructor(recipeRepository: RecipeRepository): V
         }
     }
 
-    fun generateRecipe() {
-        val prompt =
-            "please create a simpler recipe that is an improvement on these instructions for "
-        val oldRecipe = _meal.value.strInstructions
-        val oldRecipeName = _meal.value.strMeal
-        val finalPrompt =
-            "$prompt $oldRecipeName $oldRecipe  please format your response  with new lines after each step and list all ingredients after instructions "
-        viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                var res = ""
-                //
-                generativeModel.generateContentStream(finalPrompt)
-                    .collect { response ->
-                        res += response.text
-                        _meal.value = _meal.value.copy(strInstructions = res)
-                    }
-                _meal.value = _meal.value.copy(strIngredient1 = null)
-            }
-        }
+    /*
+    was used for the old gemini sdk
+     */
+    /* fun generateRecipe() {
+         val prompt =
+             "please create a simpler recipe that is an improvement on these instructions for "
+         val oldRecipe = _meal.value.strInstructions
+         val oldRecipeName = _meal.value.strMeal
+         val finalPrompt =
+             "$prompt $oldRecipeName $oldRecipe  please format your response  with new lines after each step and list all ingredients after instructions "
+         viewModelScope.launch {
+             withContext(Dispatchers.IO) {
+                 var res = ""
+                 //
+                 generativeModel.generateContentStream(finalPrompt)
+                     .collect { response ->
+                         res += response.text
+                         _meal.value = _meal.value.copy(strInstructions = res)
+                     }
+                 _meal.value = _meal.value.copy(strIngredient1 = null)
+             }
+         }
 
-    }
-
-    fun generateOpenAiRecipe() {
+     }
+ */
+    private fun generateOpenAiRecipe() {
         Log.i("RVM", "generateOpenAiRecipe")
         val prompt =
             "please create a simpler recipe that is an improvement on these instructions for "

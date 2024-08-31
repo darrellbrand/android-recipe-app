@@ -29,35 +29,36 @@ fun AppNav(
         composable(RecipeViewModel.CurrentScreen.Category().title) {
             CategoryScreen(
                 categories = categories,
-                recipeViewModel::loadListFromCategory
+                recipeViewModel::processEvent
             )
 
         }
         composable(RecipeViewModel.CurrentScreen.Detail().title) {
-            DetailsScreen(meal = meal,recipeViewModel::generateOpenAiRecipe)
+            DetailsScreen(
+                meal = meal,
+                recipeViewModel::processEvent
+            )
+
         }
         composable(RecipeViewModel.CurrentScreen.Search().title) {
             SearchList(
                 list = meals,
                 searchString = searchString,
-                onValueChanged = recipeViewModel::onValueChanged,
-                onClick = recipeViewModel::loadDetailFromMeal
+                onClick = recipeViewModel::processEvent
             )
         }
         composable(RecipeViewModel.CurrentScreen.Filter().title) {
             SearchList(
                 list = meals,
                 searchString = searchString,
-                onValueChanged = recipeViewModel::onValueChanged,
-                onClick = recipeViewModel::loadDetailFromMeal
+                onClick = recipeViewModel::processEvent
             )
         }
         composable(RecipeViewModel.CurrentScreen.Home().title) {
-            HomeScreen({
-                recipeViewModel.updateCurrentScreen(RecipeViewModel.CurrentScreen.Category())
-            }, {
-                recipeViewModel.updateCurrentScreen(RecipeViewModel.CurrentScreen.Search())
-            },meal)
+            HomeScreen(
+                recipeViewModel::processEvent
+                , meal
+            )
         }
     }
 }
