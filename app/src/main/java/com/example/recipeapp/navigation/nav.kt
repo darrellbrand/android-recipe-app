@@ -7,10 +7,10 @@ import androidx.navigation.compose.composable
 import com.example.recipeapp.domain.model.Category
 import com.example.recipeapp.domain.model.Meal
 import com.example.recipeapp.presentation.RecipeViewModel
-import com.example.recipeapp.screens.CategoryScreen
-import com.example.recipeapp.screens.DetailsScreen
-import com.example.recipeapp.screens.HomeScreen
-import com.example.recipeapp.screens.SearchList
+import com.example.recipeapp.presentation.screens.CategoryScreen
+import com.example.recipeapp.presentation.screens.DetailsScreen
+import com.example.recipeapp.presentation.screens.HomeScreen
+import com.example.recipeapp.presentation.screens.SearchList
 
 
 @Composable

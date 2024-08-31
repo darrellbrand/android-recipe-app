@@ -1,4 +1,4 @@
-package com.example.recipeapp.screens
+package com.example.recipeapp.presentation.screens
 
 
 import android.annotation.SuppressLint
@@ -183,7 +183,7 @@ fun CategoryScreen(
             columns = GridCells.Adaptive(150.dp)
         ) {
 
-            items(categories) { category ->
+            items(categories, key = { it.idCategory}) { category ->
                 CategoryItem(category = category) {
                     onClick(AppEvent.LoadListFromCategoryEvent(category))
                 }
@@ -261,7 +261,7 @@ fun SearchList(
         if (list.isNotEmpty() && list.firstOrNull()?.strMeal?.isNotEmpty() == true) {
             println("list " + list.size)
             LazyColumn() {
-                items(list) { meal ->
+                items(list, key = { it.idMeal  }  ) { meal ->
                     MealItem(meal = meal) { onClick(AppEvent.LoadDetailFromMealEvent(meal)) }
                 }
             }
@@ -380,7 +380,7 @@ fun DetailsScreen(meal: Meal, onClick: KFunction1<AppEvent, Unit>) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    onClick: KFunction1<AppEvent, Unit> ,
+    onClick: KFunction1<AppEvent, Unit>,
     meal: Meal = Meal()
 ) {
     Column(
@@ -412,7 +412,8 @@ fun HomeScreen(
 
         Spacer(modifier = Modifier.size(50.dp))
         Button(
-            onClick = { onClick(AppEvent.UpdateCurrentScreenEvent(RecipeViewModel.CurrentScreen.Category())) }, modifier = Modifier
+            onClick = { onClick(AppEvent.UpdateCurrentScreenEvent(RecipeViewModel.CurrentScreen.Category())) },
+            modifier = Modifier
                 .fillMaxWidth()
                 .padding(10.dp)
         ) {
@@ -420,7 +421,8 @@ fun HomeScreen(
         }
         Spacer(modifier = Modifier.size(20.dp))
         Button(
-            onClick = { onClick(AppEvent.UpdateCurrentScreenEvent(RecipeViewModel.CurrentScreen.Search())) }, modifier = Modifier
+            onClick = { onClick(AppEvent.UpdateCurrentScreenEvent(RecipeViewModel.CurrentScreen.Search())) },
+            modifier = Modifier
                 .fillMaxWidth()
                 .padding(10.dp)
         ) {

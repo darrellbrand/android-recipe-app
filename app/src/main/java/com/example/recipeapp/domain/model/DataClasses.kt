@@ -30,7 +30,7 @@ data class CategoryResponse(
 
 data class Meal(
     // val meals: String? = null,
-    val idMeal: String? = null,
+    val idMeal: String = "",
     val strMealThumb: String? = null,
     val strMeal: String? = null,
     var strInstructions: String? = null,
