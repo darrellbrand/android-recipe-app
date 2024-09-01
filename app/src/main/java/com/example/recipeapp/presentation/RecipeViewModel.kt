@@ -351,6 +351,7 @@ class RecipeViewModel @Inject constructor(private val recipeRepository: RecipeRe
                     " with new lines after each step and list all ingredients at " +
                     "end of recipe and not at beginning"
         viewModelScope.launch {
+            _viewState.value = _viewState.value.copy(isLoadingAiResponse = true)
             try {
                 val res = recipeRepository.getOpenAIRecipe(
                     androidId = androidId,
@@ -365,6 +366,7 @@ class RecipeViewModel @Inject constructor(private val recipeRepository: RecipeRe
                     error = e.toString()
                 )
             }
+            _viewState.value = _viewState.value.copy(isLoadingAiResponse = false)
         }
 
     }

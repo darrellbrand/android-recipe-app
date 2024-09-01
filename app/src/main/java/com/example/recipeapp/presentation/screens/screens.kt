@@ -4,6 +4,7 @@ package com.example.recipeapp.presentation.screens
 import android.annotation.SuppressLint
 import android.util.Log
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -13,9 +14,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -33,9 +37,11 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -50,11 +56,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.input.pointer.motionEventSpy
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -64,12 +71,12 @@ import coil.compose.AsyncImage
 import com.example.recipeapp.domain.model.Category
 import com.example.recipeapp.domain.model.Meal
 import com.example.recipeapp.R
+import com.example.recipeapp.domain.model.ViewState
 import com.example.recipeapp.presentation.RecipeViewModel
 import com.example.recipeapp.util.getIngredientsString
 import com.example.recipeapp.navigation.AppNav
 import com.example.recipeapp.presentation.AppEvent
 import com.example.recipeapp.ui.theme.RecipeAppTheme
-import kotlin.reflect.KFunction1
 
 
 @SuppressLint("UnusedContentLambdaTargetStateParameter")
@@ -135,12 +142,13 @@ fun MainApp(
                 modifier = Modifier.padding(values),
             ) {
                 AppNav(
-                    recipeViewModel = recipeViewModel,
+                    viewState = viewState,
                     navController = navController,
                     meals = meals,
                     searchString = searchString,
                     meal = meal,
-                    categories = categories
+                    categories = categories,
+                    processEvent = recipeViewModel::processEvent
                 )
                 BackHandler(enabled = true) {
                     recipeViewModel.processEvent(AppEvent.HandleBackPressEvent(navController))
@@ -176,14 +184,14 @@ fun MainApp(
 
 @Composable
 fun CategoryScreen(
-    categories: List<Category>, onClick: KFunction1<AppEvent, Unit>
+    categories: List<Category>, onClick: (event: AppEvent) -> Unit
 ) {
     Box(modifier = Modifier) {
         LazyVerticalGrid(
             columns = GridCells.Adaptive(150.dp)
         ) {
 
-            items(categories, key = { it.idCategory}) { category ->
+            items(categories, key = { it.idCategory }) { category ->
                 CategoryItem(category = category) {
                     onClick(AppEvent.LoadListFromCategoryEvent(category))
                 }
@@ -227,9 +235,7 @@ fun CategoryItem(category: Category, block: (Category) -> Unit) {
 
 @Composable
 fun SearchList(
-    list: List<Meal>,
-    searchString: String,
-    onClick: KFunction1<AppEvent, Unit>
+    list: List<Meal>, searchString: String, onClick: (event: AppEvent) -> Unit
 ) {
 
     Column(
@@ -261,7 +267,7 @@ fun SearchList(
         if (list.isNotEmpty() && list.firstOrNull()?.strMeal?.isNotEmpty() == true) {
             println("list " + list.size)
             LazyColumn() {
-                items(list, key = { it.idMeal  }  ) { meal ->
+                items(list, key = { it.idMeal }) { meal ->
                     MealItem(meal = meal) { onClick(AppEvent.LoadDetailFromMealEvent(meal)) }
                 }
             }
@@ -309,7 +315,9 @@ fun MealItem(meal: Meal, onClick: (meal: Meal) -> Unit) {
 
 
 @Composable
-fun DetailsScreen(meal: Meal, onClick: KFunction1<AppEvent, Unit>) {
+fun DetailsScreen(
+    meal: Meal, onClick: (event: AppEvent) -> Unit, viewState: ViewState
+) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.verticalScroll(
             rememberScrollState()
@@ -345,16 +353,31 @@ fun DetailsScreen(meal: Meal, onClick: KFunction1<AppEvent, Unit>) {
                     placeholder = painterResource(id = R.drawable.excerpt_lazy_load),
                 )
             }
-
-            Button(
-                onClick = { onClick(AppEvent.GenerateOpenAIRecipeEvent) },
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .padding(10.dp)
-            ) {
-                Text(text = "AI Generate   ", style = MaterialTheme.typography.titleLarge)
-                Icon(imageVector = Icons.Default.Refresh, contentDescription = "")
+            AnimatedVisibility(visible = viewState.isLoadingAiResponse) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    LinearProgressIndicator(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(10.dp).height(15.dp),
+                        color = MaterialTheme.colorScheme.secondaryContainer,
+                        trackColor = MaterialTheme.colorScheme.primary,
+                        strokeCap = StrokeCap.Round
+                    )
+                }
             }
+            AnimatedVisibility(visible = !viewState.isLoadingAiResponse) {
+                Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                    Button(
+                        onClick = { onClick(AppEvent.GenerateOpenAIRecipeEvent) },
+                        modifier = Modifier
+                            .padding(10.dp)
+                    ) {
+                        Text(text = "AI Generate   ", style = MaterialTheme.typography.titleLarge)
+                        Icon(imageVector = Icons.Default.Refresh, contentDescription = "")
+                    }
+                }
+            }
+
             Text(
                 text = "Instructions",
                 style = MaterialTheme.typography.headlineSmall,
@@ -380,8 +403,7 @@ fun DetailsScreen(meal: Meal, onClick: KFunction1<AppEvent, Unit>) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    onClick: KFunction1<AppEvent, Unit>,
-    meal: Meal = Meal()
+    onClick: (event: AppEvent) -> Unit, meal: Meal = Meal()
 ) {
     Column(
         modifier = Modifier
