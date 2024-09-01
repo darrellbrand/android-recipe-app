@@ -1,11 +1,13 @@
 package com.example.recipeapp.domain.model
 
+import com.example.recipeapp.presentation.AppError
 import com.example.recipeapp.presentation.RecipeViewModel
 
 data class ViewState(
     val error: String = "",
     var currentScreen: RecipeViewModel.CurrentScreen = RecipeViewModel.CurrentScreen.Home(),
-    var isLoadingAiResponse: Boolean = false
+    var isLoadingAiResponse: Boolean = false,
+    var appError: AppError? = null
 )
 
 data class MealResponse(

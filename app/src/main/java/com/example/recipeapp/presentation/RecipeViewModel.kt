@@ -26,8 +26,7 @@ class RecipeViewModel @Inject constructor(private val recipeRepository: RecipeRe
     ViewModel() {
 
     private val generativeModel = GenerativeModel(
-        modelName = "gemini-1.5-flash",
-        apiKey = BuildConfig.apiKey
+        modelName = "gemini-1.5-flash", apiKey = BuildConfig.apiKey
     )
     private val androidId = Settings.Secure.ANDROID_ID
     private var apiKey = "";
@@ -87,6 +86,10 @@ class RecipeViewModel @Inject constructor(private val recipeRepository: RecipeRe
             is AppEvent.UpdateCurrentScreenEvent -> {
                 updateCurrentScreen(event.screen)
             }
+
+            is AppEvent.GetApiKeyEvent -> {
+                getApiKey()
+            }
         }
 
     }
@@ -97,11 +100,14 @@ class RecipeViewModel @Inject constructor(private val recipeRepository: RecipeRe
             try {
                 val res = recipeRepository.getApiKey(androidId)
                 apiKey = res.apiKey.toString()
+                _viewState.value = _viewState.value.copy(
+                    appError = null, error = ""
+                )
             } catch (e: Exception) {
                 _viewState.value = _viewState.value.copy(
-                    error = e.toString()
+                    error = e.toString(), appError = AppError.ApiKeyNetworkError(e.toString())
                 )
-                Log.i("RVM", e.stackTraceToString())
+                Log.i("RVM", " getApiKey " + e.stackTraceToString())
             }
         }
     }
@@ -316,8 +322,7 @@ class RecipeViewModel @Inject constructor(private val recipeRepository: RecipeRe
 
     /*
     was used for the old gemini sdk
-     */
-    /* fun generateRecipe() {
+     *//* fun generateRecipe() {
          val prompt =
              "please create a simpler recipe that is an improvement on these instructions for "
          val oldRecipe = _meal.value.strInstructions
@@ -347,16 +352,16 @@ class RecipeViewModel @Inject constructor(private val recipeRepository: RecipeRe
             _meal.value.strInstructions + " using these ingredients. " + getIngredientsString(_meal.value)
         val oldRecipeName = _meal.value.strMeal
         val finalPrompt =
-            "$prompt $oldRecipeName $oldRecipe  please format your response " +
-                    " with new lines after each step and list all ingredients at " +
-                    "end of recipe and not at beginning"
+            "$prompt $oldRecipeName $oldRecipe  please format your response  with new lines after each step and list all ingredients at end of recipe and not at beginning"
+
+        if (viewState.value.appError is AppError.ApiKeyNetworkError) {
+            getApiKey()
+        }
         viewModelScope.launch {
             _viewState.value = _viewState.value.copy(isLoadingAiResponse = true)
             try {
                 val res = recipeRepository.getOpenAIRecipe(
-                    androidId = androidId,
-                    apiKey = apiKey,
-                    message = finalPrompt
+                    androidId = androidId, apiKey = apiKey, message = finalPrompt
                 )
                 Log.i("RVM", " $res")
                 _meal.value =

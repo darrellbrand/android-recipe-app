@@ -12,4 +12,5 @@ sealed class AppEvent{
     data class LoadDetailFromMealEvent(val meal: Meal) : AppEvent()
     data class HandleBackPressEvent(val navController: NavHostController) : AppEvent()
     data object GenerateOpenAIRecipeEvent : AppEvent()
+    data object GetApiKeyEvent : AppEvent()
 }

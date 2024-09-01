@@ -34,6 +34,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -75,6 +76,7 @@ import com.example.recipeapp.domain.model.ViewState
 import com.example.recipeapp.presentation.RecipeViewModel
 import com.example.recipeapp.util.getIngredientsString
 import com.example.recipeapp.navigation.AppNav
+import com.example.recipeapp.presentation.AppError
 import com.example.recipeapp.presentation.AppEvent
 import com.example.recipeapp.ui.theme.RecipeAppTheme
 
@@ -176,6 +178,7 @@ fun MainApp(
                         RecipeViewModel.CurrentScreen.Filter().title
                     ) { launchSingleTop = true }
                 }
+                MyAlertDialog(viewState = viewState) { recipeViewModel.processEvent(AppEvent.GetApiKeyEvent) }
             }
         }
     }
@@ -358,7 +361,8 @@ fun DetailsScreen(
                     LinearProgressIndicator(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(10.dp).height(15.dp),
+                            .padding(10.dp)
+                            .height(15.dp),
                         color = MaterialTheme.colorScheme.secondaryContainer,
                         trackColor = MaterialTheme.colorScheme.primary,
                         strokeCap = StrokeCap.Round
@@ -415,7 +419,6 @@ fun HomeScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Card(
-            onClick = { /*TODO*/ },
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary),
             shape = CircleShape,
         ) {
@@ -452,3 +455,29 @@ fun HomeScreen(
         }
     }
 }
+
+@Composable
+fun MyAlertDialog(viewState: ViewState, onClick: () -> Unit) {
+    if (viewState.appError is AppError.ApiKeyNetworkError) { // 2
+        AlertDialog(
+            onDismissRequest = {
+                onClick()
+            },
+            title = { Text(text = "Server Registration Failed") },
+            text = { Text(text = "Can't connect to server. Please try Again") },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        onClick()
+                    }
+                ) {
+                    Text(
+                        text = "Confirm",
+                        color = Color.White
+                    )
+                }
+            }
+        )
+    }
+}
+
