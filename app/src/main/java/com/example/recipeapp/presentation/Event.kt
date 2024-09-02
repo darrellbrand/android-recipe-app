@@ -1,6 +1,5 @@
 package com.example.recipeapp.presentation
 
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.example.recipeapp.domain.model.Category
 import com.example.recipeapp.domain.model.Meal
@@ -12,5 +11,5 @@ sealed class AppEvent{
     data class LoadDetailFromMealEvent(val meal: Meal) : AppEvent()
     data class HandleBackPressEvent(val navController: NavHostController) : AppEvent()
     data object GenerateOpenAIRecipeEvent : AppEvent()
-    data object GetApiKeyEvent : AppEvent()
+    data object InitEvent : AppEvent()
 }

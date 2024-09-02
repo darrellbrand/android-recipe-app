@@ -54,11 +54,15 @@ class RecipeViewModel @Inject constructor(private val recipeRepository: RecipeRe
 
 
     init {
-        getApiKey()
-        fetchCategories()
+        init()
         CurrentScreen.Home().let { _viewState.value.currentScreen = it }
         fetchRandomMeal()
 
+    }
+
+    private fun init() {
+        getApiKey()
+        fetchCategories()
     }
 
     fun processEvent(event: AppEvent) {
@@ -87,8 +91,8 @@ class RecipeViewModel @Inject constructor(private val recipeRepository: RecipeRe
                 updateCurrentScreen(event.screen)
             }
 
-            is AppEvent.GetApiKeyEvent -> {
-                getApiKey()
+            is AppEvent.InitEvent -> {
+               init()
             }
         }
 
@@ -100,13 +104,9 @@ class RecipeViewModel @Inject constructor(private val recipeRepository: RecipeRe
             try {
                 val res = recipeRepository.getApiKey(androidId)
                 apiKey = res.apiKey.toString()
-                _viewState.value = _viewState.value.copy(
-                    appError = null, error = ""
-                )
+                clearApiKeyNetworkError()
             } catch (e: Exception) {
-                _viewState.value = _viewState.value.copy(
-                    error = e.toString(), appError = AppError.ApiKeyNetworkError(e.toString())
-                )
+                addApiKeyNetworkError(e)
                 Log.i("RVM", " getApiKey " + e.stackTraceToString())
             }
         }
@@ -118,14 +118,10 @@ class RecipeViewModel @Inject constructor(private val recipeRepository: RecipeRe
             try {
                 val response: MealResponse = recipeRepository.getRandomMeal()
                 val meal: Meal? = response.meals?.firstOrNull()
-                _viewState.value = _viewState.value.copy(
-                    error = "",
-                )
+                clearNetworkError()
                 _meal.value = meal ?: Meal()
             } catch (e: Exception) {
-                _viewState.value = _viewState.value.copy(
-                    error = e.toString()
-                )
+                addNetworkError(e)
             }
         }
     }
@@ -135,14 +131,10 @@ class RecipeViewModel @Inject constructor(private val recipeRepository: RecipeRe
             Log.i("RVM", "fetchDetailMeals")
             try {
                 val response: MealResponse = meal.idMeal.let { recipeRepository.getDetailMeal(it) }
-                _meal.value = response?.meals?.firstOrNull() ?: Meal()
-                _viewState.value = _viewState.value.copy(
-                    error = "",
-                )
+                _meal.value = response.meals?.firstOrNull() ?: Meal()
+                clearNetworkError()
             } catch (e: Exception) {
-                _viewState.value = _viewState.value.copy(
-                    error = e.toString()
-                )
+                addNetworkError(e)
             }
         }
     }
@@ -152,17 +144,14 @@ class RecipeViewModel @Inject constructor(private val recipeRepository: RecipeRe
             Log.i("RVM", "fetchCategory")
             try {
                 val response: CategoryResponse = recipeRepository.getCategories()
-                _viewState.value = _viewState.value.copy(
-                    error = "",
-                )
+                clearNetworkError()
                 response.let { _categories.value = it.categories }
 
 
             } catch (e: Exception) {
-                _viewState.value = _viewState.value.copy(
-                    error = e.toString()
-                )
+                addNetworkError(e)
             }
+
         }
     }
 
@@ -171,14 +160,10 @@ class RecipeViewModel @Inject constructor(private val recipeRepository: RecipeRe
             Log.i("RVM", "fetchSearchMeals")
             try {
                 val response: MealResponse = recipeRepository.getSearchMeals(searchString.value)
-                _viewState.value = _viewState.value.copy(
-                    error = "",
-                )
                 response.let { _meals.value = it.meals ?: listOf(Meal()) }
+                clearNetworkError()
             } catch (e: Exception) {
-                _viewState.value = _viewState.value.copy(
-                    error = e.toString()
-                )
+                addNetworkError(e)
             }
         }
     }
@@ -202,15 +187,7 @@ class RecipeViewModel @Inject constructor(private val recipeRepository: RecipeRe
 
     private fun clearList() {
         Log.i("RVM", "clearList")
-        viewModelScope.launch {
-            try {
-                _meals.value = listOf(Meal())
-            } catch (e: Exception) {
-                _viewState.value = _viewState.value.copy(
-                    error = e.toString()
-                )
-            }
-        }
+        _meals.value = listOf(Meal())
     }
 
     /**
@@ -219,36 +196,21 @@ class RecipeViewModel @Inject constructor(private val recipeRepository: RecipeRe
     private fun updateCurrentScreen(screen: CurrentScreen) {
         Log.i("RVM", "updateCurrentScreen " + screen.title)
         viewModelScope.launch {
-            try {
-                clearSearchIfNeeded(screen)
-                _viewState.value = _viewState.value.copy(currentScreen = screen)
-            } catch (e: Exception) {
-                _viewState.value = _viewState.value.copy(
-                    error = e.toString()
-                )
-            }
+            clearSearchIfNeeded(screen)
+            _viewState.value = _viewState.value.copy(currentScreen = screen)
         }
     }
+
 
     private fun onValueChanged(search: String) {
         Log.i("RVM", "onValueChanged")
         viewModelScope.launch {
-            try {
-                _searchString.value = search
-                _viewState.value = _viewState.value.copy(
-                    error = "",
-                )
-                when (_viewState.value.currentScreen) {
-                    is CurrentScreen.Category -> {}
-                    is CurrentScreen.Detail -> {}
-                    is CurrentScreen.Home -> {}
-                    is CurrentScreen.Search -> fetchSearchMeals()
-                    is CurrentScreen.Filter -> {}
-                }
-            } catch (e: Exception) {
-                _viewState.value = _viewState.value.copy(
-                    error = e.toString()
-                )
+            when (_viewState.value.currentScreen) {
+                is CurrentScreen.Category -> {}
+                is CurrentScreen.Detail -> {}
+                is CurrentScreen.Home -> {}
+                is CurrentScreen.Search -> fetchSearchMeals()
+                is CurrentScreen.Filter -> {}
             }
         }
     }
@@ -261,13 +223,9 @@ class RecipeViewModel @Inject constructor(private val recipeRepository: RecipeRe
                     recipeRepository.getSearchCategoryMeals(category.strCategory)
                 response.let { _meals.value = it.meals ?: listOf(Meal()) }
                 updateCurrentScreen(CurrentScreen.Filter())
-                _viewState.value = _viewState.value.copy(
-                    error = "",
-                )
+                clearNetworkError()
             } catch (e: Exception) {
-                _viewState.value = _viewState.value.copy(
-                    error = e.toString()
-                )
+                addNetworkError(e)
             }
         }
     }
@@ -278,13 +236,9 @@ class RecipeViewModel @Inject constructor(private val recipeRepository: RecipeRe
             try {
                 fetchDetailMeals(meal)
                 updateCurrentScreen(CurrentScreen.Detail())
-                _viewState.value = _viewState.value.copy(
-                    error = "",
-                )
+                clearNetworkError()
             } catch (e: Exception) {
-                _viewState.value = _viewState.value.copy(
-                    error = e.toString()
-                )
+                addNetworkError(e)
             }
         }
     }
@@ -353,12 +307,10 @@ class RecipeViewModel @Inject constructor(private val recipeRepository: RecipeRe
         val oldRecipeName = _meal.value.strMeal
         val finalPrompt =
             "$prompt $oldRecipeName $oldRecipe  please format your response  with new lines after each step and list all ingredients at end of recipe and not at beginning"
-
-        if (viewState.value.appError is AppError.ApiKeyNetworkError) {
-            getApiKey()
-        }
         viewModelScope.launch {
-            _viewState.value = _viewState.value.copy(isLoadingAiResponse = true)
+            _viewState.value = _viewState.value.copy(
+                isLoadingAiResponse = true
+            )
             try {
                 val res = recipeRepository.getOpenAIRecipe(
                     androidId = androidId, apiKey = apiKey, message = finalPrompt
@@ -366,14 +318,39 @@ class RecipeViewModel @Inject constructor(private val recipeRepository: RecipeRe
                 Log.i("RVM", " $res")
                 _meal.value =
                     _meal.value.copy(strInstructions = res.generate, strIngredient1 = null)
+                clearApiKeyNetworkError()
             } catch (e: Exception) {
-                _viewState.value = _viewState.value.copy(
-                    error = e.toString()
-                )
+                addApiKeyNetworkError(e)
             }
             _viewState.value = _viewState.value.copy(isLoadingAiResponse = false)
         }
 
+    }
+
+    private fun clearApiKeyNetworkError() {
+        _viewState.value =
+            _viewState.value.copy(appErrors = _viewState.value.appErrors.filter { it !is AppError.ApiKeyNetworkError })
+    }
+
+    private fun clearNetworkError() {
+        _viewState.value =
+            _viewState.value.copy(appErrors = _viewState.value.appErrors.filter { it !is AppError.NetworkError })
+    }
+
+    private fun addNetworkError(e: Exception) {
+        val errors = _viewState.value.appErrors.toMutableList()
+        errors.add(AppError.NetworkError(e.stackTraceToString()))
+        _viewState.value = _viewState.value.copy(
+            appErrors = errors
+        )
+    }
+
+    private fun addApiKeyNetworkError(e: Exception) {
+        val errors = _viewState.value.appErrors.toMutableList()
+        errors.add(AppError.ApiKeyNetworkError(e.stackTraceToString()))
+        _viewState.value = _viewState.value.copy(
+            appErrors = errors
+        )
     }
 
     enum class Screens { CATEGORY, SEARCH, DETAIL, HOME, FILTER }

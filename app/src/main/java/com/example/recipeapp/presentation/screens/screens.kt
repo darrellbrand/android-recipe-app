@@ -19,7 +19,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -38,7 +37,6 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -58,7 +56,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.input.pointer.motionEventSpy
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -178,7 +175,7 @@ fun MainApp(
                         RecipeViewModel.CurrentScreen.Filter().title
                     ) { launchSingleTop = true }
                 }
-                MyAlertDialog(viewState = viewState) { recipeViewModel.processEvent(AppEvent.GetApiKeyEvent) }
+                MyAlertDialog(viewState = viewState) { recipeViewModel.processEvent(AppEvent.InitEvent) }
             }
         }
     }
@@ -458,12 +455,12 @@ fun HomeScreen(
 
 @Composable
 fun MyAlertDialog(viewState: ViewState, onClick: () -> Unit) {
-    if (viewState.appError is AppError.ApiKeyNetworkError) { // 2
+    if (viewState.appErrors.any { it is AppError.ApiKeyNetworkError || it is AppError.NetworkError }) { // 2
         AlertDialog(
             onDismissRequest = {
                 onClick()
             },
-            title = { Text(text = "Server Registration Failed") },
+            title = { Text(text = "Server Connection Failed") },
             text = { Text(text = "Can't connect to server. Please try Again") },
             confirmButton = {
                 Button(

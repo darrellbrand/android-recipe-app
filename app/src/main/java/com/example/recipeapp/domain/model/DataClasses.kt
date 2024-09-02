@@ -4,11 +4,11 @@ import com.example.recipeapp.presentation.AppError
 import com.example.recipeapp.presentation.RecipeViewModel
 
 data class ViewState(
-    val error: String = "",
     var currentScreen: RecipeViewModel.CurrentScreen = RecipeViewModel.CurrentScreen.Home(),
-    var isLoadingAiResponse: Boolean = false,
-    var appError: AppError? = null
-)
+    val isLoadingAiResponse: Boolean = false,
+    val appErrors: List<AppError> = emptyList(),
+
+    )
 
 data class MealResponse(
     val meals: List<Meal>? = null
