@@ -373,7 +373,7 @@ fun DetailsScreen(
                         modifier = Modifier
                             .padding(10.dp)
                     ) {
-                        Text(text = "AI Generate   ", style = MaterialTheme.typography.titleLarge)
+                        Text(text = "Simplify with AI   ", style = MaterialTheme.typography.titleLarge)
                         Icon(imageVector = Icons.Default.Refresh, contentDescription = "")
                     }
                 }
