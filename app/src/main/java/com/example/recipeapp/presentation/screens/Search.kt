@@ -67,6 +67,7 @@ fun SearchList(
                     imageVector = Icons.Default.Search, contentDescription = null
                 )
             },
+            maxLines = 1
         )
         if (list.isNotEmpty() && list.firstOrNull()?.strMeal?.isNotEmpty() == true) {
             LazyColumn() {
