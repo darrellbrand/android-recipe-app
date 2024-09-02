@@ -92,7 +92,7 @@ class RecipeViewModel @Inject constructor(private val recipeRepository: RecipeRe
             }
 
             is AppEvent.InitEvent -> {
-               init()
+                init()
             }
         }
 
@@ -145,10 +145,8 @@ class RecipeViewModel @Inject constructor(private val recipeRepository: RecipeRe
             Log.i("RVM", "fetchCategory")
             try {
                 val response: CategoryResponse = recipeRepository.getCategories()
-                clearNetworkError()
                 response.let { _categories.value = it.categories }
-
-
+                clearNetworkError()
             } catch (e: Exception) {
                 addNetworkError(e)
             }
@@ -171,6 +169,7 @@ class RecipeViewModel @Inject constructor(private val recipeRepository: RecipeRe
 
 
     private fun clearSearchIfNeeded(screen: CurrentScreen) {
+        Log.i("RVM", "clearSearchIfNeeded " + screen.title)
         _searchString.value = when (screen) {
             is CurrentScreen.Category -> ""
             is CurrentScreen.Detail -> ""
@@ -179,7 +178,6 @@ class RecipeViewModel @Inject constructor(private val recipeRepository: RecipeRe
                 clearList()
                 _searchString.value
             }
-
             is CurrentScreen.Filter -> {
                 _searchString.value
             }
@@ -204,7 +202,8 @@ class RecipeViewModel @Inject constructor(private val recipeRepository: RecipeRe
 
 
     private fun onValueChanged(search: String) {
-        Log.i("RVM", "onValueChanged")
+        Log.i("RVM", "onValueChanged $search")
+        _searchString.value = search
         viewModelScope.launch {
             when (_viewState.value.currentScreen) {
                 is CurrentScreen.Category -> {}
@@ -246,6 +245,7 @@ class RecipeViewModel @Inject constructor(private val recipeRepository: RecipeRe
 
 
     private fun handleBackPress(navController: NavHostController) {
+        Log.i("RVM", "handleBackPress")
         val ret = navController.popBackStack()
         println(ret)
         navController.currentBackStackEntry?.destination?.route?.let {
@@ -316,8 +316,8 @@ class RecipeViewModel @Inject constructor(private val recipeRepository: RecipeRe
                 val res = recipeRepository.getOpenAIRecipe(
                     androidId = androidId, apiKey = apiKey, message = finalPrompt
                 )
-                  Log.i("RVM", "got ai response")
-              //  Log.i("RVM", " $res")
+                Log.i("RVM", "got ai response")
+                //  Log.i("RVM", " $res")
                 _meal.value =
                     _meal.value.copy(strInstructions = res.generate, strIngredient1 = null)
                 clearApiKeyNetworkError()
