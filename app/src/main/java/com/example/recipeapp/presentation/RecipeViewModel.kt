@@ -105,6 +105,7 @@ class RecipeViewModel @Inject constructor(private val recipeRepository: RecipeRe
                 val res = recipeRepository.getApiKey(androidId)
                 apiKey = res.apiKey.toString()
                 clearApiKeyNetworkError()
+                Log.i("RVM", "got api key")
             } catch (e: Exception) {
                 addApiKeyNetworkError(e)
                 Log.i("RVM", " getApiKey " + e.stackTraceToString())
@@ -315,6 +316,7 @@ class RecipeViewModel @Inject constructor(private val recipeRepository: RecipeRe
                 val res = recipeRepository.getOpenAIRecipe(
                     androidId = androidId, apiKey = apiKey, message = finalPrompt
                 )
+                  Log.i("RVM", "got ai response")
               //  Log.i("RVM", " $res")
                 _meal.value =
                     _meal.value.copy(strInstructions = res.generate, strIngredient1 = null)
@@ -328,16 +330,19 @@ class RecipeViewModel @Inject constructor(private val recipeRepository: RecipeRe
     }
 
     private fun clearApiKeyNetworkError() {
+        Log.i("RVM", "clearApiKeyNetworkError")
         _viewState.value =
             _viewState.value.copy(appErrors = _viewState.value.appErrors.filter { it !is AppError.ApiKeyNetworkError })
     }
 
     private fun clearNetworkError() {
+        Log.i("RVM", "clearNetworkError")
         _viewState.value =
             _viewState.value.copy(appErrors = _viewState.value.appErrors.filter { it !is AppError.NetworkError })
     }
 
     private fun addNetworkError(e: Exception) {
+        Log.i("RVM", "addNetworkError")
         val errors = _viewState.value.appErrors.toMutableList()
         errors.add(AppError.NetworkError(e.stackTraceToString()))
         _viewState.value = _viewState.value.copy(
@@ -346,6 +351,7 @@ class RecipeViewModel @Inject constructor(private val recipeRepository: RecipeRe
     }
 
     private fun addApiKeyNetworkError(e: Exception) {
+        Log.i("RVM", "addApiKeyNetworkError")
         val errors = _viewState.value.appErrors.toMutableList()
         errors.add(AppError.ApiKeyNetworkError(e.stackTraceToString()))
         _viewState.value = _viewState.value.copy(
