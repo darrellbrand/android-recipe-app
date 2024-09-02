@@ -315,7 +315,7 @@ class RecipeViewModel @Inject constructor(private val recipeRepository: RecipeRe
                 val res = recipeRepository.getOpenAIRecipe(
                     androidId = androidId, apiKey = apiKey, message = finalPrompt
                 )
-                Log.i("RVM", " $res")
+              //  Log.i("RVM", " $res")
                 _meal.value =
                     _meal.value.copy(strInstructions = res.generate, strIngredient1 = null)
                 clearApiKeyNetworkError()
