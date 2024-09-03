@@ -13,6 +13,7 @@ import com.example.recipeapp.presentation.AppEvent
 import com.example.recipeapp.presentation.RecipeViewModel
 import com.example.recipeapp.presentation.screens.CategoryScreen
 import com.example.recipeapp.presentation.screens.DetailsScreen
+import com.example.recipeapp.presentation.screens.GenerateScreen
 import com.example.recipeapp.presentation.screens.HomeScreen
 import com.example.recipeapp.presentation.screens.SearchList
 
@@ -25,7 +26,9 @@ fun AppNav(
     searchString: String,
     meal: Meal,
     categories: List<Category>,
-    processEvent: (event: AppEvent) -> Unit
+    processEvent: (event: AppEvent) -> Unit,
+    selectedList: List<String>,
+    generatedRecipe: String
 ) {
     NavHost(
         navController = navController,
@@ -63,6 +66,14 @@ fun AppNav(
         composable(RecipeViewModel.CurrentScreen.Home().title) {
             HomeScreen(
                 processEvent, meal
+            )
+        }
+        composable(RecipeViewModel.CurrentScreen.Generate().title) {
+            GenerateScreen(
+                viewState = viewState,
+                selectedList = selectedList,
+                generatedRecipe = generatedRecipe,
+                block = processEvent
             )
         }
     }

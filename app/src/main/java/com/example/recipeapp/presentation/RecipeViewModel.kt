@@ -5,7 +5,6 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
-import com.example.recipeapp.BuildConfig
 import com.example.recipeapp.domain.model.Category
 import com.example.recipeapp.domain.model.CategoryResponse
 import com.example.recipeapp.domain.model.Meal
@@ -13,7 +12,6 @@ import com.example.recipeapp.domain.model.MealResponse
 import com.example.recipeapp.domain.model.ViewState
 import com.example.recipeapp.repository.RecipeRepository
 import com.example.recipeapp.util.getIngredientsString
-import com.google.ai.client.generativeai.GenerativeModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -25,9 +23,6 @@ import javax.inject.Inject
 class RecipeViewModel @Inject constructor(private val recipeRepository: RecipeRepository) :
     ViewModel() {
 
-    private val generativeModel = GenerativeModel(
-        modelName = "gemini-1.5-flash", apiKey = BuildConfig.apiKey
-    )
     private val androidId = Settings.Secure.ANDROID_ID
     private var apiKey = "";
 
@@ -52,6 +47,11 @@ class RecipeViewModel @Inject constructor(private val recipeRepository: RecipeRe
     private val _meal = MutableStateFlow(Meal())
     val meal = _meal.asStateFlow()
 
+    private val _selectedList = MutableStateFlow<List<String>>(emptyList())
+    val selectedList = _selectedList.asStateFlow()
+
+    private val _generatedRecipe = MutableStateFlow("")
+    val generatedRecipe = _generatedRecipe.asStateFlow()
 
     init {
         init()
@@ -93,6 +93,14 @@ class RecipeViewModel @Inject constructor(private val recipeRepository: RecipeRe
 
             is AppEvent.InitEvent -> {
                 init()
+            }
+
+            is AppEvent.GenerateOpenAICustomRecipeEvent -> {
+                generateOpenAiCustomRecipe()
+            }
+
+            is AppEvent.ToggleIngredientEvent -> {
+                toggleIngredientString(event.ingredient)
             }
         }
 
@@ -174,13 +182,17 @@ class RecipeViewModel @Inject constructor(private val recipeRepository: RecipeRe
             is CurrentScreen.Category -> ""
             is CurrentScreen.Detail -> ""
             is CurrentScreen.Home -> ""
+            is CurrentScreen.Generate -> ""
             is CurrentScreen.Search -> {
                 clearList()
                 _searchString.value
             }
+
             is CurrentScreen.Filter -> {
                 _searchString.value
             }
+
+
         }
     }
 
@@ -211,6 +223,7 @@ class RecipeViewModel @Inject constructor(private val recipeRepository: RecipeRe
                 is CurrentScreen.Home -> {}
                 is CurrentScreen.Search -> fetchSearchMeals()
                 is CurrentScreen.Filter -> {}
+                is CurrentScreen.Generate -> {}
             }
         }
     }
@@ -329,6 +342,37 @@ class RecipeViewModel @Inject constructor(private val recipeRepository: RecipeRe
 
     }
 
+    private fun generateOpenAiCustomRecipe() {
+        Log.i("RVM", "generateOpenAiCustomRecipe")
+        val prompt =
+            "You are a helpful ai assisting in creating recipes for people with limited food resources. We call it struggle meals in america. " +
+                    "please create a simple recipe that uses the following ingredients  " + selectedList.value.joinToString(
+                ", "
+            ) + " ."
+
+
+        val finalPrompt =
+            "$prompt  please format your response  with new lines after each step and list all ingredients at end of recipe and not at beginning"
+        viewModelScope.launch {
+            _viewState.value = _viewState.value.copy(
+                isLoadingAiResponse = true
+            )
+            try {
+                val res = recipeRepository.getOpenAIRecipe(
+                    androidId = androidId, apiKey = apiKey, message = finalPrompt
+                )
+                Log.i("RVM", "got ai response custom recipe")
+                //  Log.i("RVM", " $res")
+                _generatedRecipe.value = res.generate ?: "failed to fetch recipe"
+                clearApiKeyNetworkError()
+            } catch (e: Exception) {
+                addApiKeyNetworkError(e)
+            }
+            _viewState.value = _viewState.value.copy(isLoadingAiResponse = false)
+        }
+
+    }
+
     private fun clearApiKeyNetworkError() {
         Log.i("RVM", "clearApiKeyNetworkError")
         _viewState.value =
@@ -359,12 +403,22 @@ class RecipeViewModel @Inject constructor(private val recipeRepository: RecipeRe
         )
     }
 
-    enum class Screens { CATEGORY, SEARCH, DETAIL, HOME, FILTER }
+    private fun toggleIngredientString(ingredient: String) {
+        Log.i("RVM", "toggleIngredientString $ingredient  length before = ${selectedList.value.size}")
+        val ret = selectedList.value.toMutableList()
+        if (ret.contains(ingredient)) ret.remove(ingredient) else ret.add(ingredient)
+        _selectedList.value = ret
+        Log.i("RVM", "toggleIngredientString $ingredient  length after = ${selectedList.value.size}")
+    }
+
+
+    enum class Screens { CATEGORY, SEARCH, DETAIL, HOME, FILTER, GENERATE }
     sealed class CurrentScreen(val title: String, val screens: Screens) {
         class Category : CurrentScreen(Screens.CATEGORY.name, Screens.CATEGORY)
         class Search : CurrentScreen(Screens.SEARCH.name, Screens.SEARCH)
         class Detail : CurrentScreen(Screens.DETAIL.name, Screens.DETAIL)
         class Home : CurrentScreen(Screens.HOME.name, Screens.HOME)
         class Filter : CurrentScreen(Screens.FILTER.name, Screens.FILTER)
+        class Generate : CurrentScreen(Screens.GENERATE.name, Screens.GENERATE)
     }
 }

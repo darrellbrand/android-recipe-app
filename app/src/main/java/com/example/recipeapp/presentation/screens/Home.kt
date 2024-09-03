@@ -47,7 +47,7 @@ fun HomeScreen(
     ) {
         Card(
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary),
-            shape = CircleShape,
+          //  shape = CircleShape,
         ) {
             AsyncImage(
                 meal.strMealThumb,
@@ -57,7 +57,7 @@ fun HomeScreen(
                 modifier = Modifier
                     .size(300.dp)
                     .padding(5.dp)
-                    .clip(CircleShape)//.height(200.dp).width(200.dp)
+                 //   .clip(CircleShape)//.height(200.dp).width(200.dp)
 
             )
         }
@@ -79,6 +79,15 @@ fun HomeScreen(
                 .padding(10.dp)
         ) {
             Text(text = "Search", style = MaterialTheme.typography.headlineSmall)
+        }
+        Spacer(modifier = Modifier.size(20.dp))
+        Button(
+            onClick = { onClick(AppEvent.UpdateCurrentScreenEvent(RecipeViewModel.CurrentScreen.Generate())) },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(10.dp)
+        ) {
+            Text(text = "Generate", style = MaterialTheme.typography.headlineSmall)
         }
     }
 }

@@ -48,12 +48,15 @@ fun MainApp(
     val meals by recipeViewModel.meals.collectAsStateWithLifecycle(initialValue = listOf(Meal()))
     val searchString by recipeViewModel.searchString.collectAsStateWithLifecycle()
     val meal by recipeViewModel.meal.collectAsStateWithLifecycle()
+    val generatedRecipe by recipeViewModel.generatedRecipe.collectAsStateWithLifecycle()
+    val selectedList by recipeViewModel.selectedList.collectAsStateWithLifecycle()
     val title = when (viewState.currentScreen) {
         is RecipeViewModel.CurrentScreen.Category -> "Category"
         is RecipeViewModel.CurrentScreen.Detail -> "Instructions"
         is RecipeViewModel.CurrentScreen.Search -> "Search"
         is RecipeViewModel.CurrentScreen.Home -> "Recipe King"
         is RecipeViewModel.CurrentScreen.Filter -> "Filter"
+        is RecipeViewModel.CurrentScreen.Generate -> "Generate"
     }
     RecipeAppTheme {
         Scaffold(topBar = {
@@ -105,7 +108,9 @@ fun MainApp(
                     searchString = searchString,
                     meal = meal,
                     categories = categories,
-                    processEvent = recipeViewModel::processEvent
+                    processEvent = recipeViewModel::processEvent,
+                    generatedRecipe = generatedRecipe,
+                    selectedList = selectedList
                 )
                 BackHandler(enabled = true) {
                     recipeViewModel.processEvent(AppEvent.HandleBackPressEvent(navController))
@@ -132,6 +137,12 @@ fun MainApp(
                     is RecipeViewModel.CurrentScreen.Filter -> navController.navigate(
                         RecipeViewModel.CurrentScreen.Filter().title
                     ) { launchSingleTop = true }
+
+                    is RecipeViewModel.CurrentScreen.Generate -> {
+                        navController.navigate(RecipeViewModel.CurrentScreen.Generate().title) {
+                            launchSingleTop = true
+                        }
+                    }
                 }
                 MyAlertDialog(viewState = viewState) { recipeViewModel.processEvent(AppEvent.InitEvent) }
             }
