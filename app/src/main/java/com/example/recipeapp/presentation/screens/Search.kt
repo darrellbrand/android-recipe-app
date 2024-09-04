@@ -31,6 +31,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
@@ -104,7 +105,7 @@ fun MealItem(meal: Meal, onClick: (meal: Meal) -> Unit) {
             modifier = Modifier.fillMaxWidth(),
         ) {
             AsyncImage(
-                meal.strMealThumb,
+                meal.strMealThumb + "/preview",
                 contentDescription = "null",
                 contentScale = ContentScale.FillBounds,
                 placeholder = painterResource(id = R.drawable.excerpt_lazy_load),
@@ -114,14 +115,27 @@ fun MealItem(meal: Meal, onClick: (meal: Meal) -> Unit) {
 
             )
             Spacer(modifier = Modifier.weight(1f))
-            meal.strMeal?.let {
-                Text(
-                    text = it,
-                    modifier = Modifier.padding(5.dp),
-                    style = MaterialTheme.typography.headlineSmall,
-                    textAlign = TextAlign.Center
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                meal.strMeal?.let {
+                    Text(
+                        text = it,
+                        modifier = Modifier.padding(5.dp),
+                        style = MaterialTheme.typography.headlineSmall,
+                        textAlign = TextAlign.Center
 
-                )
+                    )
+                }
+                meal.strInstructions?.let {
+                    Text(
+                        text = it,
+                        modifier = Modifier.padding(2.dp),
+                        style = MaterialTheme.typography.bodySmall,
+                        textAlign = TextAlign.Center,
+                        maxLines = 3,
+                        overflow = TextOverflow.Ellipsis
+
+                    )
+                }
             }
             Spacer(modifier = Modifier.weight(1f))
         }
