@@ -211,10 +211,10 @@ class RecipeViewModel @Inject constructor(private val recipeRepository: RecipeRe
      */
     private fun updateCurrentScreen(screen: CurrentScreen) {
         Log.i("RVM", "updateCurrentScreen " + screen.title)
-        viewModelScope.launch {
-            clearSearchIfNeeded(screen)
-            _viewState.value = _viewState.value.copy(currentScreen = screen)
-        }
+        clearSearchIfNeeded(screen)
+        _viewState.value = _viewState.value.copy(currentScreen = screen)
+
+
     }
 
 
@@ -289,9 +289,11 @@ class RecipeViewModel @Inject constructor(private val recipeRepository: RecipeRe
                 CurrentScreen.Home().title -> {
                     updateCurrentScreen(CurrentScreen.Home())
                 }
+
                 CurrentScreen.Generate().title -> {
                     updateCurrentScreen(CurrentScreen.Generate())
                 }
+
                 CurrentScreen.GeneratedRecipe().title -> {
                     updateCurrentScreen(CurrentScreen.GeneratedRecipe())
                 }
@@ -419,14 +421,14 @@ class RecipeViewModel @Inject constructor(private val recipeRepository: RecipeRe
     private fun toggleIngredientString(ingredient: String) {
         Log.i(
             "RVM",
-            "toggleIngredientString $ingredient  length before = ${selectedList.value.size}"
+            "toggleIngredientString $ingredient  length before = ${selectedList.value.size}" + viewState.value.currentScreen.title
         )
         val ret = selectedList.value.toMutableList()
         if (ret.contains(ingredient)) ret.remove(ingredient) else ret.add(ingredient)
         _selectedList.value = ret
         Log.i(
             "RVM",
-            "toggleIngredientString $ingredient  length after = ${selectedList.value.size}"
+            "toggleIngredientString $ingredient  length after = ${selectedList.value.size} " + viewState.value.currentScreen.title
         )
     }
 
@@ -439,6 +441,7 @@ class RecipeViewModel @Inject constructor(private val recipeRepository: RecipeRe
         class Home : CurrentScreen(Screens.HOME.name, Screens.HOME)
         class Filter : CurrentScreen(Screens.FILTER.name, Screens.FILTER)
         class Generate : CurrentScreen(Screens.GENERATE.name, Screens.GENERATE)
-        class GeneratedRecipe : CurrentScreen(Screens.GENERATED_RECIPE.name, Screens.GENERATED_RECIPE)
+        class GeneratedRecipe :
+            CurrentScreen(Screens.GENERATED_RECIPE.name, Screens.GENERATED_RECIPE)
     }
 }

@@ -144,7 +144,6 @@ fun MainApp(
                             launchSingleTop = true
                         }
                     }
-
                     is RecipeViewModel.CurrentScreen.GeneratedRecipe -> {
                         navController.navigate(RecipeViewModel.CurrentScreen.GeneratedRecipe().title) {
                             launchSingleTop = true
