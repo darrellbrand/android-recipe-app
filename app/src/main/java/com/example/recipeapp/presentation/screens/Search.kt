@@ -133,7 +133,6 @@ fun MealItem(meal: Meal, onClick: (meal: Meal) -> Unit) {
                         textAlign = TextAlign.Center,
                         maxLines = 3,
                         overflow = TextOverflow.Ellipsis
-
                     )
                 }
             }
