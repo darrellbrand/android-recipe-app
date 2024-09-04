@@ -57,6 +57,7 @@ fun MainApp(
         is RecipeViewModel.CurrentScreen.Home -> "Recipe King"
         is RecipeViewModel.CurrentScreen.Filter -> "Filter"
         is RecipeViewModel.CurrentScreen.Generate -> "Generate"
+        is RecipeViewModel.CurrentScreen.GeneratedRecipe -> "Generated"
     }
     RecipeAppTheme {
         Scaffold(topBar = {
@@ -140,6 +141,12 @@ fun MainApp(
 
                     is RecipeViewModel.CurrentScreen.Generate -> {
                         navController.navigate(RecipeViewModel.CurrentScreen.Generate().title) {
+                            launchSingleTop = true
+                        }
+                    }
+
+                    is RecipeViewModel.CurrentScreen.GeneratedRecipe -> {
+                        navController.navigate(RecipeViewModel.CurrentScreen.GeneratedRecipe().title) {
                             launchSingleTop = true
                         }
                     }

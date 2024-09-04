@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -23,6 +24,12 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.StrokeCap
@@ -38,12 +45,11 @@ fun GenerateScreen(
     viewState: ViewState,
     selectedList: List<String> = emptyList(),
     block: (appEvent: AppEvent) -> Unit = {},
-    generatedRecipe: String = " recipe here"
 ) {
-
+    val scrollState = rememberScrollState()
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.verticalScroll(rememberScrollState())
+        modifier = Modifier.verticalScroll(scrollState)
     ) {
         Card {
             Text(
@@ -63,7 +69,15 @@ fun GenerateScreen(
                         colors = FilterChipDefaults.filterChipColors(
                             // containerColor = MaterialTheme.colorScheme.primaryContainer,
                             //   selectedContainerColor = MaterialTheme.colorScheme.primaryContainer
-                        )
+                        ),
+                        leadingIcon = {
+                            if (selectedList.contains(it)) {
+                                Icon(
+                                    imageVector = Icons.Filled.Done,
+                                    contentDescription = "chip selected"
+                                )
+                            }
+                        }
                     )
                 }
             }
@@ -81,6 +95,14 @@ fun GenerateScreen(
                         selected = selectedList.contains(it),
                         onClick = { block(AppEvent.ToggleIngredientEvent(it)) },
                         label = { Text(text = it) },
+                        leadingIcon = {
+                            if (selectedList.contains(it)) {
+                                Icon(
+                                    imageVector = Icons.Filled.Done,
+                                    contentDescription = "chip selected"
+                                )
+                            }
+                        },
                         modifier = Modifier.padding(2.dp)
                     )
                 }
@@ -99,6 +121,14 @@ fun GenerateScreen(
                         selected = selectedList.contains(it),
                         onClick = { block(AppEvent.ToggleIngredientEvent(it)) },
                         label = { Text(text = it) },
+                        leadingIcon = {
+                            if (selectedList.contains(it)) {
+                                Icon(
+                                    imageVector = Icons.Filled.Done,
+                                    contentDescription = "chip selected"
+                                )
+                            }
+                        },
                         modifier = Modifier.padding(2.dp)
                     )
                 }
@@ -117,6 +147,14 @@ fun GenerateScreen(
                         selected = selectedList.contains(it),
                         onClick = { block(AppEvent.ToggleIngredientEvent(it)) },
                         label = { Text(text = it) },
+                        leadingIcon = {
+                            if (selectedList.contains(it)) {
+                                Icon(
+                                    imageVector = Icons.Filled.Done,
+                                    contentDescription = "chip selected"
+                                )
+                            }
+                        },
                         modifier = Modifier.padding(2.dp)
                     )
                 }
@@ -148,23 +186,6 @@ fun GenerateScreen(
                         Icon(imageVector = Icons.Default.Refresh, contentDescription = "")
                     }
                 }
-            }
-            HorizontalDivider()
-            if (generatedRecipe.isNotEmpty()) {
-                Text(
-                    text = "Instructions",
-                    style = MaterialTheme.typography.headlineSmall,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(5.dp),
-                    textAlign = TextAlign.Center
-                )
-                Text(
-                    text = generatedRecipe,
-                    style = MaterialTheme.typography.titleLarge,
-                    modifier = Modifier.padding(25.dp),
-                    textAlign = TextAlign.Left
-                )
             }
         }
     }

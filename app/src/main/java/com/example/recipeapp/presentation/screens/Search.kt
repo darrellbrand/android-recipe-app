@@ -2,10 +2,12 @@ package com.example.recipeapp.presentation.screens
 
 import android.util.Log
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -34,21 +36,26 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.recipeapp.R
 import com.example.recipeapp.domain.model.Meal
+import com.example.recipeapp.domain.model.ViewState
 import com.example.recipeapp.presentation.AppEvent
+import com.example.recipeapp.presentation.RecipeViewModel
 
 
 @Composable
 fun SearchList(
-    list: List<Meal>, searchString: String, onClick: (event: AppEvent) -> Unit
+    viewState: ViewState, list: List<Meal>, searchString: String, onClick: (event: AppEvent) -> Unit
 ) {
+
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxHeight()
     ) {
         //Log.i("screens", "search = $searchString meals= ${list.size} = $list")
+        val text =
+            if (viewState.currentScreen is RecipeViewModel.CurrentScreen.Search) "Search" else "Filter"
         TextField(
             value = searchString,
-            label = { Text(text = "Search", style = MaterialTheme.typography.titleMedium) },
+            label = { Text(text = text, style = MaterialTheme.typography.titleMedium) },
             onValueChange = {
                 onClick(
                     AppEvent.OnValueChangedEvent(it)
@@ -69,11 +76,15 @@ fun SearchList(
             },
             maxLines = 1
         )
-        if (list.isNotEmpty() && list.firstOrNull()?.strMeal?.isNotEmpty() == true) {
+        if (list.isNotEmpty() && list.firstOrNull()?.idMeal?.isNotEmpty() == true) {
             LazyColumn() {
-                items(list, key = { it.idMeal }) { meal ->
+                items(list, key = { it.idMeal ?: "fail: no meal id" }) { meal ->
                     MealItem(meal = meal) { onClick(AppEvent.LoadDetailFromMealEvent(meal)) }
                 }
+            }
+        } else if( viewState.currentScreen is RecipeViewModel.CurrentScreen.Search) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text(text = "Type in search field to see recipes")
             }
         }
     }

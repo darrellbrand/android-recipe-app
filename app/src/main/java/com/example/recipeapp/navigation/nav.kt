@@ -14,6 +14,7 @@ import com.example.recipeapp.presentation.RecipeViewModel
 import com.example.recipeapp.presentation.screens.CategoryScreen
 import com.example.recipeapp.presentation.screens.DetailsScreen
 import com.example.recipeapp.presentation.screens.GenerateScreen
+import com.example.recipeapp.presentation.screens.GeneratedRecipeScreen
 import com.example.recipeapp.presentation.screens.HomeScreen
 import com.example.recipeapp.presentation.screens.SearchList
 
@@ -53,14 +54,15 @@ fun AppNav(
             SearchList(
                 list = meals,
                 searchString = searchString,
-                onClick = processEvent
+                onClick = processEvent, viewState = viewState
             )
         }
         composable(RecipeViewModel.CurrentScreen.Filter().title) {
             SearchList(
                 list = meals,
                 searchString = searchString,
-                onClick = processEvent
+                onClick = processEvent,
+                viewState = viewState,
             )
         }
         composable(RecipeViewModel.CurrentScreen.Home().title) {
@@ -72,9 +74,11 @@ fun AppNav(
             GenerateScreen(
                 viewState = viewState,
                 selectedList = selectedList,
-                generatedRecipe = generatedRecipe,
                 block = processEvent
             )
+        }
+        composable(RecipeViewModel.CurrentScreen.GeneratedRecipe().title) {
+            GeneratedRecipeScreen(generatedRecipe = generatedRecipe)
         }
     }
 }

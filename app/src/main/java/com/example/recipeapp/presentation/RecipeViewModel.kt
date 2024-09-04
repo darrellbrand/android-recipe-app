@@ -138,13 +138,17 @@ class RecipeViewModel @Inject constructor(private val recipeRepository: RecipeRe
     private fun fetchDetailMeals(meal: Meal) {
         viewModelScope.launch {
             Log.i("RVM", "fetchDetailMeals")
-            try {
-                val response: MealResponse = meal.idMeal.let { recipeRepository.getDetailMeal(it) }
-                _meal.value = response.meals?.firstOrNull() ?: Meal()
-                clearNetworkError()
-            } catch (e: Exception) {
-                addNetworkError(e)
-            }
+            meal.idMeal?.let {
+                try {
+                    val response: MealResponse =
+                        meal.idMeal.let { recipeRepository.getDetailMeal(it) }
+                    _meal.value = response.meals?.firstOrNull() ?: Meal()
+                    clearNetworkError()
+                } catch (e: Exception) {
+                    addNetworkError(e)
+                }
+            } ?: "Fail meal id null"
+
         }
     }
 
@@ -183,6 +187,7 @@ class RecipeViewModel @Inject constructor(private val recipeRepository: RecipeRe
             is CurrentScreen.Detail -> ""
             is CurrentScreen.Home -> ""
             is CurrentScreen.Generate -> ""
+            is CurrentScreen.GeneratedRecipe -> ""
             is CurrentScreen.Search -> {
                 clearList()
                 _searchString.value
@@ -224,6 +229,7 @@ class RecipeViewModel @Inject constructor(private val recipeRepository: RecipeRe
                 is CurrentScreen.Search -> fetchSearchMeals()
                 is CurrentScreen.Filter -> {}
                 is CurrentScreen.Generate -> {}
+                is CurrentScreen.GeneratedRecipe -> {}
             }
         }
     }
@@ -282,6 +288,12 @@ class RecipeViewModel @Inject constructor(private val recipeRepository: RecipeRe
 
                 CurrentScreen.Home().title -> {
                     updateCurrentScreen(CurrentScreen.Home())
+                }
+                CurrentScreen.Generate().title -> {
+                    updateCurrentScreen(CurrentScreen.Generate())
+                }
+                CurrentScreen.GeneratedRecipe().title -> {
+                    updateCurrentScreen(CurrentScreen.GeneratedRecipe())
                 }
             }
 
@@ -369,6 +381,7 @@ class RecipeViewModel @Inject constructor(private val recipeRepository: RecipeRe
                 addApiKeyNetworkError(e)
             }
             _viewState.value = _viewState.value.copy(isLoadingAiResponse = false)
+            updateCurrentScreen(CurrentScreen.GeneratedRecipe())
         }
 
     }
@@ -404,15 +417,21 @@ class RecipeViewModel @Inject constructor(private val recipeRepository: RecipeRe
     }
 
     private fun toggleIngredientString(ingredient: String) {
-        Log.i("RVM", "toggleIngredientString $ingredient  length before = ${selectedList.value.size}")
+        Log.i(
+            "RVM",
+            "toggleIngredientString $ingredient  length before = ${selectedList.value.size}"
+        )
         val ret = selectedList.value.toMutableList()
         if (ret.contains(ingredient)) ret.remove(ingredient) else ret.add(ingredient)
         _selectedList.value = ret
-        Log.i("RVM", "toggleIngredientString $ingredient  length after = ${selectedList.value.size}")
+        Log.i(
+            "RVM",
+            "toggleIngredientString $ingredient  length after = ${selectedList.value.size}"
+        )
     }
 
 
-    enum class Screens { CATEGORY, SEARCH, DETAIL, HOME, FILTER, GENERATE }
+    enum class Screens { CATEGORY, SEARCH, DETAIL, HOME, FILTER, GENERATE, GENERATED_RECIPE }
     sealed class CurrentScreen(val title: String, val screens: Screens) {
         class Category : CurrentScreen(Screens.CATEGORY.name, Screens.CATEGORY)
         class Search : CurrentScreen(Screens.SEARCH.name, Screens.SEARCH)
@@ -420,5 +439,6 @@ class RecipeViewModel @Inject constructor(private val recipeRepository: RecipeRe
         class Home : CurrentScreen(Screens.HOME.name, Screens.HOME)
         class Filter : CurrentScreen(Screens.FILTER.name, Screens.FILTER)
         class Generate : CurrentScreen(Screens.GENERATE.name, Screens.GENERATE)
+        class GeneratedRecipe : CurrentScreen(Screens.GENERATED_RECIPE.name, Screens.GENERATED_RECIPE)
     }
 }
