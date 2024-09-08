@@ -1,30 +1,32 @@
 package com.example.recipeapp.presentation.screens
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
 import com.example.recipeapp.R
 import com.example.recipeapp.domain.model.Meal
 import com.example.recipeapp.presentation.AppEvent
@@ -41,53 +43,91 @@ fun HomeScreen(
             .fillMaxWidth()
             .fillMaxHeight()
             .verticalScroll(rememberScrollState())
-            .background(MaterialTheme.colorScheme.primaryContainer),
-        verticalArrangement = Arrangement.Center,
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        MaterialTheme.colorScheme.primary,
+                        MaterialTheme.colorScheme.primaryContainer
+                    )
+                )
+            ),
+        verticalArrangement = Arrangement.SpaceEvenly,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Card(
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary),
-          //  shape = CircleShape,
-        ) {
-            AsyncImage(
-                meal.strMealThumb,
-                contentDescription = "null",
-                contentScale = ContentScale.FillBounds,
-                placeholder = painterResource(id = R.drawable.excerpt_lazy_load),
-                modifier = Modifier
-                    .size(300.dp)
-                    .padding(5.dp)
-                 //   .clip(CircleShape)//.height(200.dp).width(200.dp)
 
-            )
-        }
-
+        Image(
+            painter = painterResource(id = R.drawable.page_1),
+            contentDescription = "",
+            modifier = Modifier.fillMaxWidth(),
+            contentScale = ContentScale.Fit
+        )
         Spacer(modifier = Modifier.size(50.dp))
-        Button(
-            onClick = { onClick(AppEvent.UpdateCurrentScreenEvent(RecipeViewModel.CurrentScreen.Category())) },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(10.dp)
-        ) {
-            Text(text = "Categories", style = MaterialTheme.typography.headlineSmall)
+        Row(horizontalArrangement = Arrangement.SpaceEvenly) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Button(
+                    onClick = { onClick(AppEvent.UpdateCurrentScreenEvent(RecipeViewModel.CurrentScreen.Category())) },
+                    modifier = Modifier
+                        .padding(5.dp)
+                ) {
+                    Icon(
+                        imageVector = ImageVector.vectorResource(id = R.drawable.list_round_bullet_icon),
+                        contentDescription = "categories",
+                        modifier = Modifier.size(50.dp)
+                    )
+                }
+                Spacer(modifier = Modifier.size(5.dp))
+                Text(
+                    text = "Categories",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Button(
+                    onClick = { onClick(AppEvent.UpdateCurrentScreenEvent(RecipeViewModel.CurrentScreen.Search())) },
+                    modifier = Modifier
+
+                        .padding(5.dp)
+                ) {
+                    Icon(
+                        imageVector = ImageVector.vectorResource(id = R.drawable.binoculars_icon),
+                        contentDescription = "search",
+                        modifier = Modifier.size(50.dp)
+                    )
+                }
+                Text(
+                    text = "Search",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.primary
+                )
+                Spacer(modifier = Modifier.size(5.dp))
+            }
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Button(
+                    onClick = { onClick(AppEvent.UpdateCurrentScreenEvent(RecipeViewModel.CurrentScreen.Generate())) },
+                    modifier = Modifier
+                        .padding(5.dp),
+                ) {
+                    Icon(
+                        imageVector = ImageVector.vectorResource(id = R.drawable.pencil_icon),
+                        contentDescription = "generate",
+                        modifier = Modifier.size(50.dp)
+                    )
+                }
+                Text(
+                    text = "Generate",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
         }
-        Spacer(modifier = Modifier.size(20.dp))
-        Button(
-            onClick = { onClick(AppEvent.UpdateCurrentScreenEvent(RecipeViewModel.CurrentScreen.Search())) },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(10.dp)
-        ) {
-            Text(text = "Search", style = MaterialTheme.typography.headlineSmall)
-        }
-        Spacer(modifier = Modifier.size(20.dp))
-        Button(
-            onClick = { onClick(AppEvent.UpdateCurrentScreenEvent(RecipeViewModel.CurrentScreen.Generate())) },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(10.dp)
-        ) {
-            Text(text = "Generate", style = MaterialTheme.typography.headlineSmall)
-        }
+        Image(
+            imageVector = ImageVector.vectorResource(id = R.drawable.bottom_graphic),
+            contentDescription = "",
+            contentScale = ContentScale.Crop,
+            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary),
+            modifier = Modifier.fillMaxWidth()
+        )
     }
+
 }

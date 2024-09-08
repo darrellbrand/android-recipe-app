@@ -1,5 +1,6 @@
 package com.example.recipeapp.presentation.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,32 +15,38 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 
 @Composable
 fun GeneratedRecipeScreen(generatedRecipe: String) {
-        Column(
+    Column(
+        modifier = Modifier
+            .verticalScroll(rememberScrollState())
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        MaterialTheme.colorScheme.primary,
+                        MaterialTheme.colorScheme.primaryContainer
+                    )
+                )
+            )
+    ) {
+        Spacer(modifier = Modifier.size(3.dp))
+        Text(
+            text = "Instructions",
+            style = MaterialTheme.typography.headlineSmall,
             modifier = Modifier
-                .verticalScroll(rememberScrollState())
-                .fillMaxSize()
-        ) {
-            Card() {
-                Spacer(modifier = Modifier.size(3.dp))
-                Text(
-                    text = "Instructions",
-                    style = MaterialTheme.typography.headlineSmall,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(5.dp),
-                    textAlign = TextAlign.Center
-                )
-                Text(
-                    text = generatedRecipe,
-                    style = MaterialTheme.typography.titleLarge,
-                    modifier = Modifier.padding(25.dp),
-                    textAlign = TextAlign.Left
-                )
-            }
-        }
+                .fillMaxWidth()
+                .padding(5.dp),
+            textAlign = TextAlign.Center
+        )
+        Text(
+            text = generatedRecipe,
+            style = MaterialTheme.typography.titleLarge,
+            modifier = Modifier.padding(25.dp),
+            textAlign = TextAlign.Left
+        )
+    }
 }
