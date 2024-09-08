@@ -3,6 +3,7 @@ package com.example.recipeapp.presentation.screens
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -32,6 +33,7 @@ fun GeneratedRecipeScreen(generatedRecipe: String) {
                     )
                 )
             )
+            .fillMaxSize()
     ) {
         Spacer(modifier = Modifier.size(3.dp))
         Text(
@@ -45,7 +47,9 @@ fun GeneratedRecipeScreen(generatedRecipe: String) {
         Text(
             text = generatedRecipe,
             style = MaterialTheme.typography.titleLarge,
-            modifier = Modifier.padding(25.dp),
+            modifier = Modifier
+                .padding(5.dp)
+               .fillMaxSize(),
             textAlign = TextAlign.Left
         )
     }

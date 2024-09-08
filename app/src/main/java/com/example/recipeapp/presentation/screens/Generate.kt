@@ -18,6 +18,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
@@ -64,7 +66,7 @@ fun GenerateScreen(
         modifier = Modifier
             .verticalScroll(scrollState)
             .background(
-                MaterialTheme.colorScheme.primary
+                MaterialTheme.colorScheme.secondaryContainer
             )
     ) {
         Text(
@@ -83,7 +85,7 @@ fun GenerateScreen(
                             AppEvent.ToggleIngredientEvent(it)
                         )
                     },
-                    label = { Text(text = it, color = MaterialTheme.colorScheme.onPrimary) },
+                    label = { Text(text = it) },
                     modifier = Modifier.padding(2.dp),
                     leadingIcon = {
                         if (selectedList.contains(it)) {
@@ -109,7 +111,7 @@ fun GenerateScreen(
                 FilterChip(
                     selected = selectedList.contains(it),
                     onClick = { block(AppEvent.ToggleIngredientEvent(it)) },
-                    label = { Text(text = it ) },
+                    label = { Text(text = it) },
                     leadingIcon = {
                         if (selectedList.contains(it)) {
                             Icon(
@@ -193,7 +195,12 @@ fun GenerateScreen(
             }
         }
         AnimatedVisibility(visible = !viewState.isLoadingAiResponse) {
-            Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(MaterialTheme.colorScheme.secondaryContainer),
+                contentAlignment = Alignment.Center,
+            ) {
                 Column(
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
