@@ -24,7 +24,6 @@ import androidx.compose.ui.unit.dp
 fun GeneratedRecipeScreen(generatedRecipe: String) {
     Column(
         modifier = Modifier
-            .verticalScroll(rememberScrollState())
             .background(
                 brush = Brush.verticalGradient(
                     colors = listOf(
@@ -34,13 +33,14 @@ fun GeneratedRecipeScreen(generatedRecipe: String) {
                 )
             )
             .fillMaxSize()
+            .verticalScroll(rememberScrollState())
     ) {
         Spacer(modifier = Modifier.size(3.dp))
         Text(
             text = "Instructions",
             style = MaterialTheme.typography.headlineSmall,
             modifier = Modifier
-                .fillMaxWidth()
+                .fillMaxSize()
                 .padding(5.dp),
             textAlign = TextAlign.Center
         )
@@ -49,7 +49,7 @@ fun GeneratedRecipeScreen(generatedRecipe: String) {
             style = MaterialTheme.typography.titleLarge,
             modifier = Modifier
                 .padding(5.dp)
-               .fillMaxSize(),
+                .fillMaxSize(),
             textAlign = TextAlign.Left
         )
     }
