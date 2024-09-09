@@ -60,12 +60,7 @@ fun SearchList(
         modifier = Modifier
             .fillMaxHeight()
             .background(
-                brush = Brush.verticalGradient(
-                    colors = listOf(
-                        MaterialTheme.colorScheme.primary,
-                        MaterialTheme.colorScheme.primaryContainer
-                    )
-                )
+                MaterialTheme.colorScheme.primaryContainer
             )
     ) {
         //Log.i("screens", "search = $searchString meals= ${list.size} = $list")
@@ -93,8 +88,8 @@ fun SearchList(
             },
             maxLines = 1,
             colors = TextFieldDefaults.colors(
-                // focusedContainerColor = Color.Transparent,
-                // unfocusedContainerColor = Color.Transparent,
+                 focusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                 unfocusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
             ),
         )
         if (list.isNotEmpty() && list.firstOrNull()?.idMeal?.isNotEmpty() == true) {

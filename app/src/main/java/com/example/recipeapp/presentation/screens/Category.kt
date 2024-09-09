@@ -38,12 +38,7 @@ fun CategoryScreen(
 ) {
     Box(
         modifier = Modifier.background(
-            brush = Brush.verticalGradient(
-                colors = listOf(
-                    MaterialTheme.colorScheme.primary,
-                    MaterialTheme.colorScheme.primaryContainer
-                )
-            )
+            MaterialTheme.colorScheme.primaryContainer
         )
     ) {
         LazyVerticalGrid(

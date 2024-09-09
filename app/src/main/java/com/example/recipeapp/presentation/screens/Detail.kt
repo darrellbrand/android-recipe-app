@@ -52,12 +52,7 @@ fun DetailsScreen(
                 rememberScrollState()
             )
             .background(
-                brush = Brush.verticalGradient(
-                    colors = listOf(
-                        MaterialTheme.colorScheme.primary,
-                        MaterialTheme.colorScheme.primaryContainer
-                    )
-                )
+                MaterialTheme.colorScheme.primaryContainer
             )
     ) {
         Text(
