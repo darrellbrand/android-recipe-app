@@ -1,10 +1,10 @@
 package com.example.recipeapp.domain.model
 
+import com.example.recipeapp.navigation.AppRoute
 import com.example.recipeapp.presentation.AppError
-import com.example.recipeapp.presentation.RecipeViewModel
 
 data class ViewState(
-    var currentScreen: RecipeViewModel.CurrentScreen = RecipeViewModel.CurrentScreen.Home(),
+    var currentScreen: AppRoute = AppRoute.Home(),
     val isLoadingAiResponse: Boolean = false,
     val appErrors: List<AppError> = emptyList(),
 

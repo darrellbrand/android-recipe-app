@@ -24,14 +24,6 @@ import androidx.compose.ui.unit.dp
 fun GeneratedRecipeScreen(generatedRecipe: String) {
     Column(
         modifier = Modifier
-            .background(
-                brush = Brush.verticalGradient(
-                    colors = listOf(
-                        MaterialTheme.colorScheme.primary,
-                        MaterialTheme.colorScheme.primaryContainer
-                    )
-                )
-            )
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
     ) {

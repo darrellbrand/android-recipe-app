@@ -51,9 +51,7 @@ fun DetailsScreen(
             .verticalScroll(
                 rememberScrollState()
             )
-            .background(
-                MaterialTheme.colorScheme.primaryContainer
-            )
+
     ) {
         Text(
             text = meal.strMeal ?: "",

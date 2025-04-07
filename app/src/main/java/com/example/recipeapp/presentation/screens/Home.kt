@@ -29,8 +29,8 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import com.example.recipeapp.R
 import com.example.recipeapp.domain.model.Meal
+import com.example.recipeapp.navigation.AppRoute
 import com.example.recipeapp.presentation.AppEvent
-import com.example.recipeapp.presentation.RecipeViewModel
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -42,15 +42,7 @@ fun HomeScreen(
         modifier = Modifier
             .fillMaxWidth()
             .fillMaxHeight()
-            .verticalScroll(rememberScrollState())
-            .background(
-                brush = Brush.verticalGradient(
-                    colors = listOf(
-                        MaterialTheme.colorScheme.primary,
-                        MaterialTheme.colorScheme.primaryContainer
-                    )
-                )
-            ),
+            .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.SpaceEvenly,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -60,73 +52,6 @@ fun HomeScreen(
             contentDescription = "",
             modifier = Modifier.fillMaxWidth(),
             contentScale = ContentScale.Fit
-        )
-        Spacer(modifier = Modifier.size(50.dp))
-        Row(horizontalArrangement = Arrangement.SpaceEvenly) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Button(
-                    onClick = { onClick(AppEvent.UpdateCurrentScreenEvent(RecipeViewModel.CurrentScreen.Category())) },
-                    modifier = Modifier
-                        .padding(5.dp)
-                ) {
-                    Icon(
-                        imageVector = ImageVector.vectorResource(id = R.drawable.list_round_bullet_icon),
-                        contentDescription = "categories",
-                        modifier = Modifier.size(50.dp)
-                    )
-                }
-                Spacer(modifier = Modifier.size(5.dp))
-                Text(
-                    text = "Categories",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.primary
-                )
-            }
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Button(
-                    onClick = { onClick(AppEvent.UpdateCurrentScreenEvent(RecipeViewModel.CurrentScreen.Search())) },
-                    modifier = Modifier
-
-                        .padding(5.dp)
-                ) {
-                    Icon(
-                        imageVector = ImageVector.vectorResource(id = R.drawable.binoculars_icon),
-                        contentDescription = "search",
-                        modifier = Modifier.size(50.dp)
-                    )
-                }
-                Text(
-                    text = "Search",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.primary
-                )
-                Spacer(modifier = Modifier.size(5.dp))
-            }
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Button(
-                    onClick = { onClick(AppEvent.UpdateCurrentScreenEvent(RecipeViewModel.CurrentScreen.Generate())) },
-                    modifier = Modifier
-                        .padding(5.dp),
-                ) {
-                    Icon(
-                        imageVector = ImageVector.vectorResource(id = R.drawable.pencil_icon),
-                        contentDescription = "generate",
-                        modifier = Modifier.size(50.dp)
-                    )
-                }
-                Text(
-                    text = "Generate",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.primary
-                )
-            }
-        }
-        Image(
-            imageVector = ImageVector.vectorResource(id = R.drawable.bottom_graphic),
-            contentDescription = "",
-            contentScale = ContentScale.Crop,
-            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary),
-            modifier = Modifier.fillMaxWidth()
         )
     }
 

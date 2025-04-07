@@ -1,8 +1,6 @@
 package com.example.recipeapp.presentation.screens
 
-import android.util.Log
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,8 +16,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -30,9 +26,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -44,8 +37,8 @@ import coil.compose.AsyncImage
 import com.example.recipeapp.R
 import com.example.recipeapp.domain.model.Meal
 import com.example.recipeapp.domain.model.ViewState
+import com.example.recipeapp.navigation.AppRoute
 import com.example.recipeapp.presentation.AppEvent
-import com.example.recipeapp.presentation.RecipeViewModel
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -59,13 +52,10 @@ fun SearchList(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxHeight()
-            .background(
-                MaterialTheme.colorScheme.primaryContainer
-            )
     ) {
         //Log.i("screens", "search = $searchString meals= ${list.size} = $list")
         val text =
-            if (viewState.currentScreen is RecipeViewModel.CurrentScreen.Search) "Search" else "Filter"
+            if (viewState.currentScreen is AppRoute.Search) "Search" else "Filter"
         TextField(
             value = searchString,
             label = { Text(text = text, style = MaterialTheme.typography.titleMedium) },
@@ -87,10 +77,6 @@ fun SearchList(
                 )
             },
             maxLines = 1,
-            colors = TextFieldDefaults.colors(
-                 focusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
-                 unfocusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
-            ),
         )
         if (list.isNotEmpty() && list.firstOrNull()?.idMeal?.isNotEmpty() == true) {
             LazyColumn() {
@@ -98,7 +84,7 @@ fun SearchList(
                     MealItem(meal = meal) { onClick(AppEvent.LoadDetailFromMealEvent(meal)) }
                 }
             }
-        } else if (viewState.currentScreen is RecipeViewModel.CurrentScreen.Search) {
+        } else if (viewState.currentScreen is AppRoute.Search) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Text(text = "Type in search field to see recipes")
             }

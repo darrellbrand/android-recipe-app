@@ -10,6 +10,7 @@ import com.example.recipeapp.domain.model.CategoryResponse
 import com.example.recipeapp.domain.model.Meal
 import com.example.recipeapp.domain.model.MealResponse
 import com.example.recipeapp.domain.model.ViewState
+import com.example.recipeapp.navigation.AppRoute
 import com.example.recipeapp.repository.RecipeRepository
 import com.example.recipeapp.util.getIngredientsString
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -55,7 +56,7 @@ class RecipeViewModel @Inject constructor(private val recipeRepository: RecipeRe
 
     init {
         init()
-        CurrentScreen.Home().let { _viewState.value.currentScreen = it }
+        AppRoute.Home().let { _viewState.value.currentScreen = it }
         fetchRandomMeal()
 
     }
@@ -96,11 +97,7 @@ class RecipeViewModel @Inject constructor(private val recipeRepository: RecipeRe
             }
 
             is AppEvent.GenerateOpenAICustomRecipeEvent -> {
-                generateOpenAiCustomRecipe()
-            }
-
-            is AppEvent.ToggleIngredientEvent -> {
-                toggleIngredientString(event.ingredient)
+                generateOpenAiCustomRecipe(event.selectedList)
             }
         }
 
@@ -180,20 +177,20 @@ class RecipeViewModel @Inject constructor(private val recipeRepository: RecipeRe
     }
 
 
-    private fun clearSearchIfNeeded(screen: CurrentScreen) {
+    private fun clearSearchIfNeeded(screen: AppRoute) {
         Log.i("RVM", "clearSearchIfNeeded " + screen.title)
         _searchString.value = when (screen) {
-            is CurrentScreen.Category -> ""
-            is CurrentScreen.Detail -> ""
-            is CurrentScreen.Home -> ""
-            is CurrentScreen.Generate -> ""
-            is CurrentScreen.GeneratedRecipe -> ""
-            is CurrentScreen.Search -> {
+            is AppRoute.Category -> ""
+            is AppRoute.Detail -> ""
+            is AppRoute.Home -> ""
+            is AppRoute.Generate -> ""
+            is AppRoute.GeneratedRecipe -> ""
+            is AppRoute.Search -> {
                 clearList()
                 _searchString.value
             }
 
-            is CurrentScreen.Filter -> {
+            is AppRoute.Filter -> {
                 _searchString.value
             }
 
@@ -209,7 +206,7 @@ class RecipeViewModel @Inject constructor(private val recipeRepository: RecipeRe
     /**
      * callbacks for ui  will be processed as events ///////////////////////////////////////////////////////////////////////////////////////////////
      */
-    private fun updateCurrentScreen(screen: CurrentScreen) {
+    private fun updateCurrentScreen(screen: AppRoute) {
         Log.i("RVM", "updateCurrentScreen " + screen.title)
         clearSearchIfNeeded(screen)
         _viewState.value = _viewState.value.copy(currentScreen = screen)
@@ -223,13 +220,13 @@ class RecipeViewModel @Inject constructor(private val recipeRepository: RecipeRe
         _searchString.value = search
         viewModelScope.launch {
             when (_viewState.value.currentScreen) {
-                is CurrentScreen.Category -> {}
-                is CurrentScreen.Detail -> {}
-                is CurrentScreen.Home -> {}
-                is CurrentScreen.Search -> fetchSearchMeals()
-                is CurrentScreen.Filter -> {}
-                is CurrentScreen.Generate -> {}
-                is CurrentScreen.GeneratedRecipe -> {}
+                is AppRoute.Category -> {}
+                is AppRoute.Detail -> {}
+                is AppRoute.Home -> {}
+                is AppRoute.Search -> fetchSearchMeals()
+                is AppRoute.Filter -> {}
+                is AppRoute.Generate -> {}
+                is AppRoute.GeneratedRecipe -> {}
             }
         }
     }
@@ -241,7 +238,7 @@ class RecipeViewModel @Inject constructor(private val recipeRepository: RecipeRe
                 val response: MealResponse =
                     recipeRepository.getSearchCategoryMeals(category.strCategory)
                 response.let { _meals.value = it.meals ?: listOf(Meal()) }
-                updateCurrentScreen(CurrentScreen.Filter())
+                updateCurrentScreen(AppRoute.Filter())
                 clearNetworkError()
             } catch (e: Exception) {
                 addNetworkError(e)
@@ -254,7 +251,7 @@ class RecipeViewModel @Inject constructor(private val recipeRepository: RecipeRe
         viewModelScope.launch {
             try {
                 fetchDetailMeals(meal)
-                updateCurrentScreen(CurrentScreen.Detail())
+                updateCurrentScreen(AppRoute.Detail())
                 clearNetworkError()
             } catch (e: Exception) {
                 addNetworkError(e)
@@ -270,32 +267,32 @@ class RecipeViewModel @Inject constructor(private val recipeRepository: RecipeRe
         navController.currentBackStackEntry?.destination?.route?.let {
 
             when (it) {
-                CurrentScreen.Category().title -> {
-                    updateCurrentScreen(CurrentScreen.Category())
+                AppRoute.Category().title -> {
+                    updateCurrentScreen(AppRoute.Category())
                 }
 
-                CurrentScreen.Search().title -> {
-                    updateCurrentScreen(CurrentScreen.Search())
+                AppRoute.Search().title -> {
+                    updateCurrentScreen(AppRoute.Search())
                 }
 
-                CurrentScreen.Detail().title -> {
-                    updateCurrentScreen(CurrentScreen.Detail())
+                AppRoute.Detail().title -> {
+                    updateCurrentScreen(AppRoute.Detail())
                 }
 
-                CurrentScreen.Filter().title -> {
-                    updateCurrentScreen(CurrentScreen.Filter())
+                AppRoute.Filter().title -> {
+                    updateCurrentScreen(AppRoute.Filter())
                 }
 
-                CurrentScreen.Home().title -> {
-                    updateCurrentScreen(CurrentScreen.Home())
+                AppRoute.Home().title -> {
+                    updateCurrentScreen(AppRoute.Home())
                 }
 
-                CurrentScreen.Generate().title -> {
-                    updateCurrentScreen(CurrentScreen.Generate())
+                AppRoute.Generate().title -> {
+                    updateCurrentScreen(AppRoute.Generate())
                 }
 
-                CurrentScreen.GeneratedRecipe().title -> {
-                    updateCurrentScreen(CurrentScreen.GeneratedRecipe())
+                AppRoute.GeneratedRecipe().title -> {
+                    updateCurrentScreen(AppRoute.GeneratedRecipe())
                 }
             }
 
@@ -356,11 +353,11 @@ class RecipeViewModel @Inject constructor(private val recipeRepository: RecipeRe
 
     }
 
-    private fun generateOpenAiCustomRecipe() {
+    private fun generateOpenAiCustomRecipe(selectedList : List<String>) {
         Log.i("RVM", "generateOpenAiCustomRecipe")
         val prompt =
             "You are a helpful ai assisting in creating recipes for people with limited food resources. We call it struggle meals in america. " +
-                    "please create a simple recipe that uses the following ingredients  " + selectedList.value.joinToString(
+                    "please create a simple recipe that uses the following ingredients  " + selectedList.joinToString(
                 ", "
             ) + " ."
 
@@ -383,7 +380,7 @@ class RecipeViewModel @Inject constructor(private val recipeRepository: RecipeRe
                 addApiKeyNetworkError(e)
             }
             _viewState.value = _viewState.value.copy(isLoadingAiResponse = false)
-            updateCurrentScreen(CurrentScreen.GeneratedRecipe())
+            updateCurrentScreen(AppRoute.GeneratedRecipe())
         }
 
     }
@@ -418,30 +415,4 @@ class RecipeViewModel @Inject constructor(private val recipeRepository: RecipeRe
         )
     }
 
-    private fun toggleIngredientString(ingredient: String) {
-        Log.i(
-            "RVM",
-            "toggleIngredientString $ingredient  length before = ${selectedList.value.size}" + viewState.value.currentScreen.title
-        )
-        val ret = selectedList.value.toMutableList()
-        if (ret.contains(ingredient)) ret.remove(ingredient) else ret.add(ingredient)
-        _selectedList.value = ret
-        Log.i(
-            "RVM",
-            "toggleIngredientString $ingredient  length after = ${selectedList.value.size} " + viewState.value.currentScreen.title
-        )
-    }
-
-
-    enum class Screens { CATEGORY, SEARCH, DETAIL, HOME, FILTER, GENERATE, GENERATED_RECIPE }
-    sealed class CurrentScreen(val title: String, val screens: Screens) {
-        class Category : CurrentScreen(Screens.CATEGORY.name, Screens.CATEGORY)
-        class Search : CurrentScreen(Screens.SEARCH.name, Screens.SEARCH)
-        class Detail : CurrentScreen(Screens.DETAIL.name, Screens.DETAIL)
-        class Home : CurrentScreen(Screens.HOME.name, Screens.HOME)
-        class Filter : CurrentScreen(Screens.FILTER.name, Screens.FILTER)
-        class Generate : CurrentScreen(Screens.GENERATE.name, Screens.GENERATE)
-        class GeneratedRecipe :
-            CurrentScreen(Screens.GENERATED_RECIPE.name, Screens.GENERATED_RECIPE)
-    }
 }

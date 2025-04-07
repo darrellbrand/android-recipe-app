@@ -1,8 +1,6 @@
 package com.example.recipeapp.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -10,7 +8,6 @@ import com.example.recipeapp.domain.model.Category
 import com.example.recipeapp.domain.model.Meal
 import com.example.recipeapp.domain.model.ViewState
 import com.example.recipeapp.presentation.AppEvent
-import com.example.recipeapp.presentation.RecipeViewModel
 import com.example.recipeapp.presentation.screens.CategoryScreen
 import com.example.recipeapp.presentation.screens.DetailsScreen
 import com.example.recipeapp.presentation.screens.GenerateScreen
@@ -33,31 +30,31 @@ fun AppNav(
 ) {
     NavHost(
         navController = navController,
-        startDestination = RecipeViewModel.CurrentScreen.Home().title
+        startDestination = AppRoute.Home().title
     ) {
 
-        composable(RecipeViewModel.CurrentScreen.Category().title) {
+        composable(AppRoute.Category().title) {
             CategoryScreen(
                 categories = categories,
                 processEvent
             )
 
         }
-        composable(RecipeViewModel.CurrentScreen.Detail().title) {
+        composable(AppRoute.Detail().title) {
             DetailsScreen(
                 meal = meal,
                 processEvent, viewState = viewState
             )
 
         }
-        composable(RecipeViewModel.CurrentScreen.Search().title) {
+        composable(AppRoute.Search().title) {
             SearchList(
                 list = meals,
                 searchString = searchString,
                 onClick = processEvent, viewState = viewState
             )
         }
-        composable(RecipeViewModel.CurrentScreen.Filter().title) {
+        composable(AppRoute.Filter().title) {
             SearchList(
                 list = meals,
                 searchString = searchString,
@@ -65,19 +62,18 @@ fun AppNav(
                 viewState = viewState,
             )
         }
-        composable(RecipeViewModel.CurrentScreen.Home().title) {
+        composable(AppRoute.Home().title) {
             HomeScreen(
                 processEvent, meal
             )
         }
-        composable(RecipeViewModel.CurrentScreen.Generate().title) {
+        composable(AppRoute.Generate().title) {
             GenerateScreen(
                 viewState = viewState,
-                selectedList = selectedList,
                 block = processEvent
             )
         }
-        composable(RecipeViewModel.CurrentScreen.GeneratedRecipe().title) {
+        composable(AppRoute.GeneratedRecipe().title) {
             GeneratedRecipeScreen(generatedRecipe = generatedRecipe)
         }
     }

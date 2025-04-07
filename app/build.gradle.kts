@@ -14,7 +14,7 @@ android {
     defaultConfig {
         applicationId = "com.example.recipeapp"
         minSdk = 24
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
@@ -84,7 +84,7 @@ dependencies {
     implementation("io.coil-kt:coil-compose:2.7.0") // Kotlin
     implementation("androidx.navigation:navigation-fragment-ktx:$nav_version")
     implementation("androidx.navigation:navigation-ui-ktx:$nav_version")
-
+    implementation ("androidx.compose.material:material:1.7.8")
     // Feature module Support
     implementation("androidx.navigation:navigation-dynamic-features-fragment:$nav_version")
 

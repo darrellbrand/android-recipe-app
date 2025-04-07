@@ -1,6 +1,7 @@
 package com.example.recipeapp.presentation.screens
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -32,9 +33,11 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -57,17 +60,20 @@ import com.example.recipeapp.presentation.Ingredients
 @Composable
 fun GenerateScreen(
     viewState: ViewState,
-    selectedList: List<String> = emptyList(),
     block: (appEvent: AppEvent) -> Unit = {},
-) {
+
+    ) {
     val scrollState = rememberScrollState()
+    var selectedList by rememberSaveable { mutableStateOf(emptyList<String>()) }
+
+    fun toggleIngredient(ingredient : String){
+        selectedList =
+            if (selectedList.contains(ingredient)) selectedList - ingredient else selectedList + ingredient
+    }
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .verticalScroll(scrollState)
-            .background(
-                MaterialTheme.colorScheme.secondaryContainer
-            )
     ) {
         Text(
             text = "Meat",
@@ -78,24 +84,26 @@ fun GenerateScreen(
         )
         FlowRow {
             Ingredients.MEAT_LIST.forEach {
-                FilterChip(
-                    selected = selectedList.contains(it),
-                    onClick = {
-                        block(
-                            AppEvent.ToggleIngredientEvent(it)
+                key(it) {
+                    androidx.compose.animation.AnimatedVisibility(true) {
+                        FilterChip(
+                            selected = selectedList.contains(it),
+                            onClick = {
+                               toggleIngredient(it)
+                            },
+                            label = { Text(text = it) },
+                            modifier = Modifier.padding(2.dp),
+                            leadingIcon = {
+                                if (selectedList.contains(it)) {
+                                    Icon(
+                                        imageVector = Icons.Filled.Done,
+                                        contentDescription = "chip selected"
+                                    )
+                                }
+                            }, colors = FilterChipDefaults.filterChipColors()
                         )
-                    },
-                    label = { Text(text = it) },
-                    modifier = Modifier.padding(2.dp),
-                    leadingIcon = {
-                        if (selectedList.contains(it)) {
-                            Icon(
-                                imageVector = Icons.Filled.Done,
-                                contentDescription = "chip selected"
-                            )
-                        }
-                    }, colors = FilterChipDefaults.filterChipColors()
-                )
+                    }
+                }
             }
         }
         HorizontalDivider()
@@ -108,20 +116,26 @@ fun GenerateScreen(
         )
         FlowRow {
             Ingredients.DAIRY_LIST.forEach {
-                FilterChip(
-                    selected = selectedList.contains(it),
-                    onClick = { block(AppEvent.ToggleIngredientEvent(it)) },
-                    label = { Text(text = it) },
-                    leadingIcon = {
-                        if (selectedList.contains(it)) {
-                            Icon(
-                                imageVector = Icons.Filled.Done,
-                                contentDescription = "chip selected"
-                            )
-                        }
-                    },
-                    modifier = Modifier.padding(2.dp),
-                )
+                key(it) {
+                    androidx.compose.animation.AnimatedVisibility(true) {
+                        FilterChip(
+                            selected = selectedList.contains(it),
+                            onClick = {
+                               toggleIngredient(it)
+                            },
+                            label = { Text(text = it) },
+                            leadingIcon = {
+                                if (selectedList.contains(it)) {
+                                    Icon(
+                                        imageVector = Icons.Filled.Done,
+                                        contentDescription = "chip selected"
+                                    )
+                                }
+                            },
+                            modifier = Modifier.padding(2.dp),
+                        )
+                    }
+                }
             }
         }
         HorizontalDivider()
@@ -134,24 +148,31 @@ fun GenerateScreen(
         )
         FlowRow {
             Ingredients.VEGETABLE_LIST.forEach {
-                FilterChip(
-                    selected = selectedList.contains(it),
-                    onClick = { block(AppEvent.ToggleIngredientEvent(it)) },
-                    label = {
-                        Text(
-                            text = it,
+                key(it) {
+                    androidx.compose.animation.AnimatedVisibility(true) {
+                        FilterChip(
+                            selected = selectedList.contains(it),
+                            onClick = {
+                                toggleIngredient(it)
+
+                            },
+                            label = {
+                                Text(
+                                    text = it,
+                                )
+                            },
+                            leadingIcon = {
+                                if (selectedList.contains(it)) {
+                                    Icon(
+                                        imageVector = Icons.Filled.Done,
+                                        contentDescription = "chip selected"
+                                    )
+                                }
+                            },
+                            modifier = Modifier.padding(2.dp)
                         )
-                    },
-                    leadingIcon = {
-                        if (selectedList.contains(it)) {
-                            Icon(
-                                imageVector = Icons.Filled.Done,
-                                contentDescription = "chip selected"
-                            )
-                        }
-                    },
-                    modifier = Modifier.padding(2.dp)
-                )
+                    }
+                }
             }
         }
         HorizontalDivider()
@@ -164,20 +185,26 @@ fun GenerateScreen(
         )
         FlowRow {
             Ingredients.FRUIT_LIST.forEach {
-                FilterChip(
-                    selected = selectedList.contains(it),
-                    onClick = { block(AppEvent.ToggleIngredientEvent(it)) },
-                    label = { Text(text = it) },
-                    leadingIcon = {
-                        if (selectedList.contains(it)) {
-                            Icon(
-                                imageVector = Icons.Filled.Done,
-                                contentDescription = "chip selected"
-                            )
-                        }
-                    },
-                    modifier = Modifier.padding(2.dp)
-                )
+                key(it) {
+                    androidx.compose.animation.AnimatedVisibility(true) {
+                        FilterChip(
+                            selected = selectedList.contains(it),
+                            onClick = {
+                               toggleIngredient(it)
+                            },
+                            label = { Text(text = it) },
+                            leadingIcon = {
+                                if (selectedList.contains(it)) {
+                                    Icon(
+                                        imageVector = Icons.Filled.Done,
+                                        contentDescription = "chip selected"
+                                    )
+                                }
+                            },
+                            modifier = Modifier.padding(2.dp)
+                        )
+                    }
+                }
             }
         }
         HorizontalDivider()
@@ -188,7 +215,6 @@ fun GenerateScreen(
                         .fillMaxWidth()
                         .padding(10.dp)
                         .height(15.dp),
-                    color = MaterialTheme.colorScheme.secondaryContainer,
                     trackColor = MaterialTheme.colorScheme.primary,
                     strokeCap = StrokeCap.Round
                 )
@@ -197,8 +223,7 @@ fun GenerateScreen(
         AnimatedVisibility(visible = !viewState.isLoadingAiResponse) {
             Box(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .background(MaterialTheme.colorScheme.secondaryContainer),
+                    .fillMaxWidth(),
                 contentAlignment = Alignment.Center,
             ) {
                 Column(
@@ -206,7 +231,7 @@ fun GenerateScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Button(
-                        onClick = { block(AppEvent.GenerateOpenAICustomRecipeEvent) },
+                        onClick = { block(AppEvent.GenerateOpenAICustomRecipeEvent(selectedList)) },
                         modifier = Modifier.padding(10.dp)
                     ) {
 
@@ -226,3 +251,4 @@ fun GenerateScreen(
         }
     }
 }
+

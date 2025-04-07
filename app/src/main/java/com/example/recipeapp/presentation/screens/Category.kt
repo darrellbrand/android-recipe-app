@@ -37,9 +37,7 @@ fun CategoryScreen(
     categories: List<Category>, onClick: (event: AppEvent) -> Unit
 ) {
     Box(
-        modifier = Modifier.background(
-            MaterialTheme.colorScheme.primaryContainer
-        )
+
     ) {
         LazyVerticalGrid(
             columns = GridCells.Adaptive(150.dp)
