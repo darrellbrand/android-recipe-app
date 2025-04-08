@@ -75,7 +75,9 @@ fun SearchList(
 ) {
      var query by rememberSaveable { mutableStateOf("") }
      val focusRequester = remember { FocusRequester() }
-    LaunchedEffect(query) {
+    LaunchedEffect(Unit) {
+
+        focusRequester.requestFocus()
         snapshotFlow { query}
             .debounce(2500) // Wait for 500ms of no typing
             .distinctUntilChanged()
@@ -84,9 +86,7 @@ fun SearchList(
                 onClick(AppEvent.OnValueChangedEvent(debouncedQuery))
             }
     }
-    LaunchedEffect(Unit) {
-        focusRequester.requestFocus()
-    }
+
 
     Column(
         verticalArrangement = Arrangement.SpaceAround,
