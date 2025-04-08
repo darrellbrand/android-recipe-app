@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -14,10 +15,15 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -46,26 +52,23 @@ import com.example.recipeapp.util.getIngredientsString
 fun DetailsScreen(
     meal: Meal, onClick: (event: AppEvent) -> Unit, viewState: ViewState
 ) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier
-            .verticalScroll(
-                rememberScrollState()
-            )
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier
+                .verticalScroll(
+                    rememberScrollState()
+                )
+                .padding(5.dp)
 
-    ) {
-        Text(
-            text = meal.strMeal ?: "",
-            style = MaterialTheme.typography.headlineSmall,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(5.dp),
-            textAlign = TextAlign.Center
-        )
-        Box(
-            contentAlignment = Alignment.Center, modifier = Modifier
-                .fillMaxWidth()
-                .padding(10.dp)
         ) {
+            Text(
+                text = meal.strMeal ?: "",
+                style = MaterialTheme.typography.headlineSmall,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(5.dp),
+                textAlign = TextAlign.Center
+            )
             AsyncImage(
                 meal.strMealThumb,
                 contentDescription = "null",
@@ -75,58 +78,49 @@ fun DetailsScreen(
                 contentScale = ContentScale.Crop,
                 placeholder = painterResource(id = R.drawable.excerpt_lazy_load),
             )
-        }
-        AnimatedVisibility(visible = viewState.isLoadingAiResponse) {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+
+            AnimatedVisibility(visible = viewState.isLoadingAiResponse) {
                 LinearProgressIndicator(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(10.dp)
-                        .height(15.dp),
-                    color = MaterialTheme.colorScheme.secondaryContainer,
-                    trackColor = MaterialTheme.colorScheme.primary,
+                        .height(25.dp),
                     strokeCap = StrokeCap.Round
                 )
             }
-        }
-        AnimatedVisibility(visible = !viewState.isLoadingAiResponse) {
-            Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                Column(
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
 
-                    Button(
-                        onClick = { onClick(AppEvent.GenerateOpenAIRecipeEvent) },
-                        modifier = Modifier.padding(10.dp)
-                    ) {
-                        Icon(
-                            imageVector = ImageVector.vectorResource(id = R.drawable.pencil_icon),
-                            modifier = Modifier.size(50.dp),
-                            contentDescription = ""
-                        )
-                    }
-                    Text(text = "Simplify with AI   ", style = MaterialTheme.typography.bodyMedium)
+            AnimatedVisibility(
+                visible = !viewState.isLoadingAiResponse,
+            ) {
+                meal.strInstructions?.let { it ->
+                    val ingredients = getIngredientsString(meal)
+                    Text(
+                        text = "$it \n $ingredients",
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = Modifier.padding(10.dp),
+                        textAlign = TextAlign.Left
+                    )
                 }
             }
         }
 
-        Text(
-            text = "Instructions",
-            style = MaterialTheme.typography.headlineSmall,
+        AnimatedVisibility(
+            visible = !viewState.isLoadingAiResponse,
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(5.dp),
-            textAlign = TextAlign.Center
-        )
-        meal.strInstructions?.let { it ->
-            val ingredients = getIngredientsString(meal)
-            Text(
-                text = "$it \n $ingredients",
-                style = MaterialTheme.typography.titleLarge,
-                modifier = Modifier.padding(25.dp),
-                textAlign = TextAlign.Left
-            )
+                .align(Alignment.BottomEnd)
+                .padding(5.dp)
+        ) {
+            FloatingActionButton(
+                onClick = { onClick(AppEvent.GenerateOpenAIRecipeEvent) },
+                modifier = Modifier
+                    .padding(10.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Create,
+                    modifier = Modifier.size(25.dp),
+                    contentDescription = ""
+                )
+            }
         }
     }
 }

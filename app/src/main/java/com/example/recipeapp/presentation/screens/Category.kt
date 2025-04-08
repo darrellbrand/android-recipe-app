@@ -70,7 +70,7 @@ fun CategoryItem(category: Category, block: (Category) -> Unit) {
         Text(
             text = category.strCategory,
             textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.titleLarge,
+            style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.fillMaxWidth()
         )
     }

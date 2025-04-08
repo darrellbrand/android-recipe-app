@@ -1,7 +1,9 @@
 package com.example.recipeapp.presentation.screens
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,6 +14,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -21,6 +25,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -49,9 +54,7 @@ fun SearchList(
 
 
     Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .fillMaxHeight()
+        verticalArrangement = Arrangement.SpaceAround,
     ) {
         //Log.i("screens", "search = $searchString meals= ${list.size} = $list")
         val text =
@@ -65,9 +68,7 @@ fun SearchList(
                 )
             },
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(5.dp)
-                .clip(RoundedCornerShape(percent = 50)),
+                .fillMaxWidth(),
             textStyle = TextStyle(
                 textAlign = TextAlign.Start, fontSize = 20.sp
             ),
@@ -79,14 +80,25 @@ fun SearchList(
             maxLines = 1,
         )
         if (list.isNotEmpty() && list.firstOrNull()?.idMeal?.isNotEmpty() == true) {
-            LazyColumn() {
-                items(list, key = { it.idMeal ?: "fail: no meal id" }) { meal ->
-                    MealItem(meal = meal) { onClick(AppEvent.LoadDetailFromMealEvent(meal)) }
+            LazyVerticalGrid(columns = GridCells.Adaptive(minSize = 125.dp)) {
+                items(list.size, key = { list[it].idMeal!! }) { meal ->
+                    MealItem(meal = list[meal]) { onClick(AppEvent.LoadDetailFromMealEvent(list[meal])) }
                 }
             }
         } else if (viewState.currentScreen is AppRoute.Search) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text(text = "Type in search field to see recipes")
+                Column {
+                    Text(
+                        text = "Type in search field to see recipes",
+                        modifier = Modifier.align(Alignment.CenterHorizontally)
+                    )
+                    Image(
+                        painter = painterResource(id = R.drawable.page_1),
+                        contentDescription = "",
+                        modifier = Modifier.fillMaxWidth(),
+                        contentScale = ContentScale.Fit
+                    )
+                }
             }
         }
     }
@@ -94,8 +106,8 @@ fun SearchList(
 
 @Composable
 fun MealItem(meal: Meal, onClick: (meal: Meal) -> Unit) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onClick(meal) },
@@ -106,32 +118,20 @@ fun MealItem(meal: Meal, onClick: (meal: Meal) -> Unit) {
             contentScale = ContentScale.FillBounds,
             placeholder = painterResource(id = R.drawable.excerpt_lazy_load),
             modifier = Modifier
-                .size(100.dp)
-                .clip(RoundedCornerShape(10.dp))//.height(200.dp).width(200.dp)
+                .size(125.dp)
+            //   .clip(RoundedCornerShape(10.dp))//.height(200.dp).width(200.dp)
 
         )
         Spacer(modifier = Modifier.weight(1f))
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            meal.strMeal?.let {
-                Text(
-                    text = it,
-                    modifier = Modifier.padding(5.dp),
-                    style = MaterialTheme.typography.headlineSmall,
-                    textAlign = TextAlign.Center
+        //  Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        meal.strMeal?.let {
+            Text(
+                text = it,
+                modifier = Modifier.padding(5.dp),
+                style = MaterialTheme.typography.titleMedium,
+                textAlign = TextAlign.Center
 
-                )
-            }
-            meal.strInstructions?.let {
-                Text(
-                    text = it,
-                    modifier = Modifier.padding(2.dp),
-                    style = MaterialTheme.typography.bodySmall,
-                    textAlign = TextAlign.Center,
-                    maxLines = 3,
-                    overflow = TextOverflow.Ellipsis
-                )
-            }
+            )
         }
-        Spacer(modifier = Modifier.weight(1f))
     }
 }
