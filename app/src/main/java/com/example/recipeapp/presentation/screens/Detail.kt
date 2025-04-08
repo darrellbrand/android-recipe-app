@@ -38,6 +38,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -63,7 +65,7 @@ fun DetailsScreen(
         ) {
             Text(
                 text = meal.strMeal ?: "",
-                style = MaterialTheme.typography.headlineSmall,
+                style = MaterialTheme.typography.headlineSmall.copy(fontFamily = FontFamily(Font(R.font.dancing_script)), color = MaterialTheme.colorScheme.primary),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(5.dp),
@@ -96,7 +98,7 @@ fun DetailsScreen(
                     val ingredients = getIngredientsString(meal)
                     Text(
                         text = "$it \n $ingredients",
-                        style = MaterialTheme.typography.bodyLarge,
+                        style = MaterialTheme.typography.bodyLarge.copy(fontFamily = FontFamily(Font(R.font.dancing_script)), color = MaterialTheme.colorScheme.primary),
                         modifier = Modifier.padding(10.dp),
                         textAlign = TextAlign.Left
                     )

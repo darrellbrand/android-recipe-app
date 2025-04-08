@@ -186,8 +186,8 @@ class RecipeViewModel @Inject constructor(private val recipeRepository: RecipeRe
             is AppRoute.Generate -> ""
             is AppRoute.GeneratedRecipe -> ""
             is AppRoute.Search -> {
-                clearList()
-                _searchString.value
+                //clearList()
+               _searchString.value
             }
 
             is AppRoute.Filter -> {
@@ -208,7 +208,7 @@ class RecipeViewModel @Inject constructor(private val recipeRepository: RecipeRe
      */
     private fun updateCurrentScreen(screen: AppRoute) {
         Log.i("RVM", "updateCurrentScreen " + screen.title)
-        clearSearchIfNeeded(screen)
+      //  clearSearchIfNeeded(screen)
         _viewState.value = _viewState.value.copy(currentScreen = screen)
 
 

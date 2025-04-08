@@ -2,12 +2,10 @@ package com.example.recipeapp.presentation.screens
 
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
@@ -21,10 +19,11 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonColors
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -38,13 +37,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.rememberNavController
+import com.example.recipeapp.R
 import com.example.recipeapp.domain.model.Meal
 import com.example.recipeapp.domain.model.ViewState
 import com.example.recipeapp.navigation.AppNav
@@ -60,6 +60,7 @@ import com.example.recipeapp.ui.theme.RecipeAppTheme
 @Composable
 fun MainApp(
 ) {
+    val  customFont = FontFamily(Font(R.font.dancing_script))
     val navController = rememberNavController()
     val recipeViewModel: RecipeViewModel = viewModel()
     val categories by recipeViewModel.categories.collectAsStateWithLifecycle()
@@ -72,7 +73,7 @@ fun MainApp(
     val title = when (viewState.currentScreen) {
         is AppRoute.Category -> "Category"
         is AppRoute.Detail -> "Instructions"
-        is AppRoute.Search -> "Search"
+        is AppRoute.Search -> "Search recipes"
         is AppRoute.Home -> "Home"
         is AppRoute.Filter -> "Filter"
         is AppRoute.Generate -> "Generate"
@@ -100,12 +101,13 @@ fun MainApp(
                         style = TextStyle(
                             color = MaterialTheme.colorScheme.primary,
                             fontSize = 30.sp,
-                            fontFamily = FontFamily.Cursive
+                            fontFamily = customFont
                         ),
                     )
                 },
                 navigationIcon = {
                     IconButton(
+                       colors = IconButtonDefaults.iconButtonColors(contentColor = MaterialTheme.colorScheme.primary),
                         enabled = viewState.currentScreen.title != AppRoute.Home().title,
                         onClick = {
                             recipeViewModel.processEvent(AppEvent.HandleBackPressEvent(navController))
@@ -113,11 +115,13 @@ fun MainApp(
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             "",
+                            //tint = MaterialTheme.colorScheme.primary
                         )
                     }
                 },
                 actions = {
                     IconButton(
+                        colors = IconButtonDefaults.iconButtonColors(contentColor = MaterialTheme.colorScheme.primary),
                         enabled = viewState.currentScreen.title != AppRoute.Home().title,
                         onClick = {
                             recipeViewModel.processEvent(
@@ -140,12 +144,14 @@ fun MainApp(
             ) {
                 topLevelRoutes.forEach { topLevelRoute ->
                     NavigationBarItem(
+                        colors = NavigationBarItemDefaults.colors(selectedIconColor = MaterialTheme.colorScheme.primary, selectedTextColor = MaterialTheme.colorScheme.primary),
                         icon = {
                             Icon(
-                                topLevelRoute.icon, contentDescription = topLevelRoute.route.title
+                                topLevelRoute.icon, contentDescription = topLevelRoute.route.title,
+
                             )
                         },
-                        label = { Text(topLevelRoute.route.title.lowercase()) },
+                        label = { Text(topLevelRoute.route.title.lowercase(), style = TextStyle(fontFamily = customFont)) },
                         selected = viewState.currentScreen.title == topLevelRoute.route.title,
                         onClick = {
                             recipeViewModel.processEvent(
@@ -160,7 +166,6 @@ fun MainApp(
             Surface(
                 modifier = Modifier
                     .padding(values)
-                    .imePadding()
             ) {
                 AppNav(
                     viewState = viewState,

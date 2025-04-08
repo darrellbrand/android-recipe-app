@@ -57,6 +57,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -88,8 +89,7 @@ fun GenerateScreen(
         AnimatedVisibility(visible = !viewState.isLoadingAiResponse) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier
-                    .verticalScroll(scrollState)
+                modifier = Modifier.verticalScroll(scrollState)
             ) {
                 Text(
                     text = "Meat",
@@ -100,20 +100,22 @@ fun GenerateScreen(
                     style = TextStyle(
                         color = MaterialTheme.colorScheme.primary,
                         fontSize = 30.sp,
-                        fontFamily = FontFamily.Cursive
+                        fontFamily = FontFamily(Font(R.font.dancing_script)),
                     )
                 )
                 FlowRow {
                     Ingredients.MEAT_LIST.forEach {
 
                         FilterChip(
-                            selected = selectedList.contains(it),
-                            onClick = {
+                            selected = selectedList.contains(it), onClick = {
                                 toggleIngredient(it)
-                            },
-                            label = { Text(text = it) },
-                            modifier = Modifier.padding(2.dp),
-                            leadingIcon = {
+                            }, label = {
+                                Text(
+                                    text = it,
+                                    style = TextStyle(fontFamily = FontFamily(Font(R.font.dancing_script))),
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                            }, modifier = Modifier.padding(2.dp), leadingIcon = {
                                 if (selectedList.contains(it)) {
                                     Icon(
                                         imageVector = Icons.Filled.Done,
@@ -133,7 +135,7 @@ fun GenerateScreen(
                     style = TextStyle(
                         color = MaterialTheme.colorScheme.primary,
                         fontSize = 30.sp,
-                        fontFamily = FontFamily.Cursive
+                        fontFamily = FontFamily(Font(R.font.dancing_script)),
                     )
                 )
                 FlowRow {
@@ -143,7 +145,13 @@ fun GenerateScreen(
                             onClick = {
                                 toggleIngredient(it)
                             },
-                            label = { Text(text = it) },
+                            label = {
+                                Text(
+                                    text = it,
+                                    style = TextStyle(fontFamily = FontFamily(Font(R.font.dancing_script))),
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                            },
                             leadingIcon = {
                                 if (selectedList.contains(it)) {
                                     Icon(
@@ -165,31 +173,29 @@ fun GenerateScreen(
                     style = TextStyle(
                         color = MaterialTheme.colorScheme.primary,
                         fontSize = 30.sp,
-                        fontFamily = FontFamily.Cursive
+                        fontFamily = FontFamily(Font(R.font.dancing_script)),
                     )
                 )
                 FlowRow {
                     Ingredients.VEGETABLE_LIST.forEach {
                         FilterChip(
-                            selected = selectedList.contains(it),
-                            onClick = {
+                            selected = selectedList.contains(it), onClick = {
                                 toggleIngredient(it)
 
-                            },
-                            label = {
+                            }, label = {
                                 Text(
                                     text = it,
+                                    style = TextStyle(fontFamily = FontFamily(Font(R.font.dancing_script))),
+                                    color = MaterialTheme.colorScheme.primary
                                 )
-                            },
-                            leadingIcon = {
+                            }, leadingIcon = {
                                 if (selectedList.contains(it)) {
                                     Icon(
                                         imageVector = Icons.Filled.Done,
                                         contentDescription = "chip selected"
                                     )
                                 }
-                            },
-                            modifier = Modifier.padding(2.dp)
+                            }, modifier = Modifier.padding(2.dp)
                         )
                     }
                 }
@@ -202,7 +208,7 @@ fun GenerateScreen(
                     style = TextStyle(
                         color = MaterialTheme.colorScheme.primary,
                         fontSize = 30.sp,
-                        fontFamily = FontFamily.Cursive
+                        fontFamily = FontFamily(Font(R.font.dancing_script))
                     )
                 )
                 FlowRow {
@@ -212,7 +218,12 @@ fun GenerateScreen(
                             onClick = {
                                 toggleIngredient(it)
                             },
-                            label = { Text(text = it) },
+                            label = {
+                                Text(
+                                    text = it,
+                                    style = TextStyle(fontFamily = FontFamily(Font(R.font.dancing_script)), color = MaterialTheme.colorScheme.primary)
+                                )
+                            },
                             leadingIcon = {
                                 if (selectedList.contains(it)) {
                                     Icon(
@@ -228,8 +239,7 @@ fun GenerateScreen(
             }
         }
         AnimatedVisibility(
-            visible = viewState.isLoadingAiResponse,
-            modifier = Modifier.align(Alignment.Center)
+            visible = viewState.isLoadingAiResponse, modifier = Modifier.align(Alignment.Center)
         ) {
             Column() {
                 LinearProgressIndicator(
@@ -249,8 +259,7 @@ fun GenerateScreen(
         }
 
         AnimatedVisibility(
-            visible = !viewState.isLoadingAiResponse,
-            modifier = Modifier.align(Alignment.BottomEnd)
+            visible = !viewState.isLoadingAiResponse, modifier = Modifier.align(Alignment.BottomEnd)
         ) {
             FloatingActionButton(
                 onClick = { block(AppEvent.GenerateOpenAICustomRecipeEvent(selectedList)) },
