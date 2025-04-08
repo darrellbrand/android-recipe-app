@@ -71,9 +71,9 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 fun SearchList(
     viewState: ViewState, list: List<Meal>, searchString: String, onClick: (event: AppEvent) -> Unit
 ) {
-    val keyboardController = LocalSoftwareKeyboardController.current
-    var focusRequester = remember { FocusRequester() }
-    var query by rememberSaveable  { mutableStateOf("") }
+     var query by rememberSaveable { mutableStateOf("") }
+     var focusRequester = remember { FocusRequester() }
+
     LaunchedEffect(Unit) {
         snapshotFlow { query }
             .debounce(2500) // Wait for 500ms of no typing
@@ -82,7 +82,7 @@ fun SearchList(
                 Log.i("screens", "search = $searchString meals= ${list.size}")
                 onClick(AppEvent.OnValueChangedEvent(debouncedQuery))
             }
-        focusRequester.captureFocus()
+
     }
 
     Column(
@@ -119,9 +119,9 @@ fun SearchList(
             },
             maxLines = 1,
         )
-        if (list.isNotEmpty() ) {
+        if (list.isNotEmpty() && list[0].idMeal != null ) {
             LazyVerticalGrid(columns = GridCells.Adaptive(minSize = 125.dp)) {
-                items(list.size, key = { list[it].idMeal!! }) { meal ->
+                items(list.size, key = { list[it].idMeal!!}) { meal ->
                     MealItem(meal = list[meal]) { onClick(AppEvent.LoadDetailFromMealEvent(list[meal])) }
                 }
             }

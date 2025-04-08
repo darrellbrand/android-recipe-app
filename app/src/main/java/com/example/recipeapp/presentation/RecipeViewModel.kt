@@ -217,13 +217,15 @@ class RecipeViewModel @Inject constructor(private val recipeRepository: RecipeRe
 
     private fun onValueChanged(search: String) {
         Log.i("RVM", "onValueChanged $search")
-        _searchString.value = search
         viewModelScope.launch {
             when (_viewState.value.currentScreen) {
                 is AppRoute.Category -> {}
                 is AppRoute.Detail -> {}
                 is AppRoute.Home -> {}
-                is AppRoute.Search -> fetchSearchMeals()
+                is AppRoute.Search ->{
+                    fetchSearchMeals()
+                    _searchString.value = search
+                }
                 is AppRoute.Filter -> {}
                 is AppRoute.Generate -> {}
                 is AppRoute.GeneratedRecipe -> {}
