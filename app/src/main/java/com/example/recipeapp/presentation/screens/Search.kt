@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -43,6 +44,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
@@ -72,17 +74,18 @@ fun SearchList(
     viewState: ViewState, list: List<Meal>, searchString: String, onClick: (event: AppEvent) -> Unit
 ) {
      var query by rememberSaveable { mutableStateOf("") }
-     var focusRequester = remember { FocusRequester() }
-
-    LaunchedEffect(Unit) {
-        snapshotFlow { query }
+     val focusRequester = remember { FocusRequester() }
+    LaunchedEffect(query) {
+        snapshotFlow { query}
             .debounce(2500) // Wait for 500ms of no typing
             .distinctUntilChanged()
             .collect { debouncedQuery ->
                 Log.i("screens", "search = $searchString meals= ${list.size}")
                 onClick(AppEvent.OnValueChangedEvent(debouncedQuery))
             }
-
+    }
+    LaunchedEffect(Unit) {
+        focusRequester.requestFocus()
     }
 
     Column(
@@ -147,6 +150,8 @@ fun SearchList(
             }
         }
     }
+
+
 }
 
 @Composable
