@@ -17,8 +17,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.example.recipeapp.R
 
 @Composable
 fun GeneratedRecipeScreen(generatedRecipe: String) {
@@ -30,7 +33,9 @@ fun GeneratedRecipeScreen(generatedRecipe: String) {
         Spacer(modifier = Modifier.size(3.dp))
         Text(
             text = "Instructions",
-            style = MaterialTheme.typography.headlineSmall,
+            style = MaterialTheme.typography.headlineSmall.copy(color = MaterialTheme.colorScheme.primary, fontFamily = FontFamily(
+                Font(R.font.dancing_script)
+            )),
             modifier = Modifier
                 .fillMaxSize()
                 .padding(5.dp),
@@ -38,7 +43,9 @@ fun GeneratedRecipeScreen(generatedRecipe: String) {
         )
         Text(
             text = generatedRecipe,
-            style = MaterialTheme.typography.titleLarge,
+            style = MaterialTheme.typography.titleLarge.copy(color = MaterialTheme.colorScheme.primary, fontFamily = FontFamily(
+                Font(R.font.dancing_script)
+            )),
             modifier = Modifier
                 .padding(5.dp)
                 .fillMaxSize(),

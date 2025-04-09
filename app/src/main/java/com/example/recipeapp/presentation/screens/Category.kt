@@ -72,7 +72,7 @@ fun CategoryItem(category: Category, block: (Category) -> Unit) {
         Text(
             text = category.strCategory,
             textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.titleMedium.copy(fontFamily = FontFamily(Font(R.font.dancing_script)), color = MaterialTheme.colorScheme.primary),
+            style = MaterialTheme.typography.titleLarge.copy(fontFamily = FontFamily(Font(R.font.dancing_script)), color = MaterialTheme.colorScheme.primary),
             modifier = Modifier.fillMaxWidth()
         )
     }

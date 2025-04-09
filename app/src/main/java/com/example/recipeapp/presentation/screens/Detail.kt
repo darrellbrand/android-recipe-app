@@ -23,6 +23,7 @@ import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
@@ -64,12 +65,12 @@ fun DetailsScreen(
 
         ) {
             Text(
-                text = meal.strMeal ?: "",
-                style = MaterialTheme.typography.headlineSmall.copy(fontFamily = FontFamily(Font(R.font.dancing_script)), color = MaterialTheme.colorScheme.primary),
-                modifier = Modifier
+                text = meal.strMeal ?: "", style = MaterialTheme.typography.headlineSmall.copy(
+                    fontFamily = FontFamily(Font(R.font.dancing_script)),
+                    color = MaterialTheme.colorScheme.primary
+                ), modifier = Modifier
                     .fillMaxWidth()
-                    .padding(5.dp),
-                textAlign = TextAlign.Center
+                    .padding(5.dp), textAlign = TextAlign.Center
             )
             AsyncImage(
                 meal.strMealThumb,
@@ -80,14 +81,11 @@ fun DetailsScreen(
                 contentScale = ContentScale.Crop,
                 placeholder = painterResource(id = R.drawable.excerpt_lazy_load),
             )
-
+            Spacer(modifier = Modifier.height(20.dp))
             AnimatedVisibility(visible = viewState.isLoadingAiResponse) {
-                LinearProgressIndicator(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(10.dp)
-                        .height(25.dp),
-                    strokeCap = StrokeCap.Round
+
+                CircularProgressIndicator(
+                    modifier = Modifier.size(100.dp), strokeWidth = 20.dp
                 )
             }
 
@@ -98,7 +96,13 @@ fun DetailsScreen(
                     val ingredients = getIngredientsString(meal)
                     Text(
                         text = "$it \n $ingredients",
-                        style = MaterialTheme.typography.bodyLarge.copy(fontFamily = FontFamily(Font(R.font.dancing_script)), color = MaterialTheme.colorScheme.primary),
+                        style = MaterialTheme.typography.bodyLarge.copy(
+                            fontFamily = FontFamily(
+                                Font(
+                                    R.font.dancing_script
+                                )
+                            ), color = MaterialTheme.colorScheme.primary
+                        ),
                         modifier = Modifier.padding(10.dp),
                         textAlign = TextAlign.Left
                     )
@@ -114,8 +118,7 @@ fun DetailsScreen(
         ) {
             FloatingActionButton(
                 onClick = { onClick(AppEvent.GenerateOpenAIRecipeEvent) },
-                modifier = Modifier
-                    .padding(10.dp)
+                modifier = Modifier.padding(10.dp)
             ) {
                 Icon(
                     imageVector = Icons.Filled.Create,

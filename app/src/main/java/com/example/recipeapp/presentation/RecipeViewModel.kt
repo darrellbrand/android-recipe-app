@@ -2,6 +2,8 @@ package com.example.recipeapp.presentation
 
 import android.provider.Settings
 import android.util.Log
+import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
@@ -30,20 +32,21 @@ class RecipeViewModel @Inject constructor(private val recipeRepository: RecipeRe
     private val _viewState = MutableStateFlow(ViewState())
     val viewState = _viewState.asStateFlow()
 
-    private val _searchString = MutableStateFlow(String())
+    private val _searchString = MutableStateFlow(TextFieldValue())
     val searchString = _searchString.asStateFlow()
 
     private val _categories = MutableStateFlow(listOf(Category()))
     val categories = _categories.asStateFlow()
 
     private val _meals = MutableStateFlow(listOf(Meal()))
-    val meals = _meals.asStateFlow().combine(_searchString) { meals: List<Meal>, s: String ->
-        if (s.isBlank()) {
-            meals
-        } else {
-            meals.filter { it.strMeal?.contains(s, ignoreCase = true) == true }
+    val meals =
+        _meals.asStateFlow().combine(_searchString) { meals: List<Meal>, s: TextFieldValue ->
+            if (s.text.isBlank()) {
+                meals
+            } else {
+                meals.filter { it.strMeal?.contains(s.text, ignoreCase = true) == true }
+            }
         }
-    }
 
     private val _meal = MutableStateFlow(Meal())
     val meal = _meal.asStateFlow()
@@ -167,7 +170,8 @@ class RecipeViewModel @Inject constructor(private val recipeRepository: RecipeRe
         viewModelScope.launch {
             Log.i("RVM", "fetchSearchMeals")
             try {
-                val response: MealResponse = recipeRepository.getSearchMeals(searchString.value)
+                val response: MealResponse =
+                    recipeRepository.getSearchMeals(searchString.value.text)
                 response.let { _meals.value = it.meals ?: listOf(Meal()) }
                 clearNetworkError()
             } catch (e: Exception) {
@@ -180,14 +184,10 @@ class RecipeViewModel @Inject constructor(private val recipeRepository: RecipeRe
     private fun clearSearchIfNeeded(screen: AppRoute) {
         Log.i("RVM", "clearSearchIfNeeded " + screen.title)
         _searchString.value = when (screen) {
-            is AppRoute.Category -> ""
-            is AppRoute.Detail -> ""
-            is AppRoute.Home -> ""
-            is AppRoute.Generate -> ""
-            is AppRoute.GeneratedRecipe -> ""
+            is AppRoute.Category, is AppRoute.Detail, is AppRoute.Home, is AppRoute.Generate, is AppRoute.GeneratedRecipe -> TextFieldValue()
             is AppRoute.Search -> {
-                //clearList()
-               _searchString.value
+                clearList()
+                _searchString.value
             }
 
             is AppRoute.Filter -> {
@@ -208,25 +208,28 @@ class RecipeViewModel @Inject constructor(private val recipeRepository: RecipeRe
      */
     private fun updateCurrentScreen(screen: AppRoute) {
         Log.i("RVM", "updateCurrentScreen " + screen.title)
-      //  clearSearchIfNeeded(screen)
+        clearSearchIfNeeded(screen)
         _viewState.value = _viewState.value.copy(currentScreen = screen)
 
 
     }
 
 
-    private fun onValueChanged(search: String) {
+    private fun onValueChanged(search: TextFieldValue) {
         Log.i("RVM", "onValueChanged $search")
         viewModelScope.launch {
             when (_viewState.value.currentScreen) {
                 is AppRoute.Category -> {}
                 is AppRoute.Detail -> {}
                 is AppRoute.Home -> {}
-                is AppRoute.Search ->{
+                is AppRoute.Search -> {
                     fetchSearchMeals()
                     _searchString.value = search
                 }
-                is AppRoute.Filter -> {}
+
+                is AppRoute.Filter -> {
+                    _searchString.value = search
+                }
                 is AppRoute.Generate -> {}
                 is AppRoute.GeneratedRecipe -> {}
             }
@@ -355,11 +358,10 @@ class RecipeViewModel @Inject constructor(private val recipeRepository: RecipeRe
 
     }
 
-    private fun generateOpenAiCustomRecipe(selectedList : List<String>) {
+    private fun generateOpenAiCustomRecipe(selectedList: List<String>) {
         Log.i("RVM", "generateOpenAiCustomRecipe")
         val prompt =
-            "You are a helpful ai assisting in creating recipes for people with limited food resources. We call it struggle meals in america. " +
-                    "please create a simple recipe that uses the following ingredients  " + selectedList.joinToString(
+            "You are a helpful ai assisting in creating recipes for people with limited food resources. We call it struggle meals in america. " + "please create a simple recipe that uses the following ingredients  " + selectedList.joinToString(
                 ", "
             ) + " ."
 

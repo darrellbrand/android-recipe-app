@@ -1,6 +1,7 @@
 package com.example.recipeapp.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -21,7 +22,7 @@ fun AppNav(
     viewState: ViewState,
     navController: NavHostController,
     meals: List<Meal>,
-    searchString: String,
+    searchString: TextFieldValue,
     meal: Meal,
     categories: List<Category>,
     processEvent: (event: AppEvent) -> Unit,

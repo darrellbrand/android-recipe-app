@@ -27,6 +27,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.FloatingActionButton
@@ -242,12 +243,13 @@ fun GenerateScreen(
             visible = viewState.isLoadingAiResponse, modifier = Modifier.align(Alignment.Center)
         ) {
             Column() {
-                LinearProgressIndicator(
+                CircularProgressIndicator(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(10.dp)
                         .height(30.dp),
-                    strokeCap = StrokeCap.Round
+                    strokeCap = StrokeCap.Round,
+                    strokeWidth = 20.dp
                 )
                 Image(
                     painter = painterResource(id = R.drawable.page_1),

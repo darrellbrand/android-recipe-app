@@ -1,17 +1,15 @@
 package com.example.recipeapp.presentation.screens
 
-import android.view.RoundedCorner
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CornerSize
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -19,7 +17,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -38,35 +35,23 @@ import com.example.recipeapp.presentation.AppEvent
 fun HomeScreen(
     onClick: (event: AppEvent) -> Unit, meal: Meal = Meal()
 ) {
-   val  cursive = FontFamily(Font(R.font.dancing_script))
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxHeight(),
-          //  .verticalScroll(rememberScrollState()),
-        verticalArrangement = Arrangement.SpaceEvenly,
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        Text(text = "Recipe King",
-            style = TextStyle(
-                color = MaterialTheme.colorScheme.primary,
-                fontSize = 90.sp,
-                fontFamily = cursive
-            ) )
-        Image(
-            painter = painterResource(id = R.drawable.page_1),
-            contentDescription = "",
-            modifier = Modifier.fillMaxWidth(),
-            contentScale = ContentScale.Fit
+    val cursive = FontFamily(Font(R.font.dancing_script))
+    Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
+
+        AsyncImage(
+            meal.strMealThumb,
+            contentDescription = "null",
+            contentScale = ContentScale.Crop,
+            placeholder = painterResource(id = R.drawable.excerpt_lazy_load),
+            modifier = Modifier.fillMaxSize()
         )
-        Card(modifier =  Modifier.background(color = MaterialTheme.colorScheme.primary).padding(10.dp)) {
-            AsyncImage(
-                meal.strMealThumb,
-                contentDescription = "null",
-                contentScale = ContentScale.Fit,
-                placeholder = painterResource(id = R.drawable.excerpt_lazy_load),
-            )
-        }
+        Text(
+            text = "Recipe King", style = TextStyle(
+                color = MaterialTheme.colorScheme.primary, fontSize = 100.sp, fontFamily = cursive
+            ), modifier = Modifier.align(Alignment.TopCenter)
+        )
+
     }
 
 }
+
