@@ -22,6 +22,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
@@ -47,8 +48,9 @@ fun HomeScreen(
         )
         Text(
             text = "Recipe King", style = TextStyle(
-                color = MaterialTheme.colorScheme.primary, fontSize = 100.sp, fontFamily = cursive
-            ), modifier = Modifier.align(Alignment.TopCenter)
+                color = MaterialTheme.colorScheme.primary, fontSize = 120.sp, fontFamily = cursive,
+                textAlign = TextAlign.Center
+            ), modifier = Modifier.align(Alignment.TopStart)
         )
 
     }
